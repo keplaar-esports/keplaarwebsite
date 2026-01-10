@@ -1,0 +1,225 @@
+<!-- ============================================ -->
+<!-- MOBILE TEMPLATE - 2D Scrollable Experience -->
+<!-- ============================================ -->
+
+<!-- This will be loaded into #app-container for mobile users -->
+
+<!-- Mobile Header -->
+<header id="mobile-header">
+  <div class="mobile-header-content">
+    <img src="assets/textures/logo.png" alt="Keplaar Esports" class="mobile-logo">
+    <h1 class="mobile-title">KEPLAAR ESPORTS</h1>
+    <button id="mobile-menu-toggle" class="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+  
+  <!-- Mobile Navigation Menu -->
+  <nav id="mobile-nav" class="mobile-nav-menu">
+    <a href="#hero" data-section="hero">Home</a>
+    <a href="#events" data-section="events">Events</a>
+    <a href="#about" data-section="about">About Us</a>
+    <a href="#team" data-section="team">Our Team</a>
+    <a href="#giveaways" data-section="giveaways">Giveaways</a>
+    <a href="#join" data-section="join">Join Us</a>
+  </nav>
+</header>
+
+<!-- Mobile Content Container -->
+<div id="mobile-content">
+  
+  <!-- Hero Section -->
+  <section id="hero" class="mobile-section hero-section">
+    <div class="section-content">
+      <img src="assets/textures/logo.png" alt="Keplaar Esports" class="hero-logo">
+      <h1>KEPLAAR ESPORTS</h1>
+      <p class="hero-subtitle">Canada's Premier Esports Organization</p>
+      <p class="hero-tagline">Version 2.0 | 2025</p>
+      <button class="cta-button" onclick="document.getElementById('events').scrollIntoView({behavior: 'smooth'})">
+        Explore Events
+      </button>
+    </div>
+  </section>
+
+  <!-- Upcoming Events Section -->
+  <section id="events" class="mobile-section">
+    <div class="section-content">
+      <h2 class="section-title">Upcoming Events</h2>
+      
+      <div class="event-card">
+        <div class="event-icon">🎮</div>
+        <h3>Event 1</h3>
+        <p>Coming Soon</p>
+        <button class="event-button">Learn More</button>
+      </div>
+      
+      <div class="event-card">
+        <div class="event-icon">🏆</div>
+        <h3>Event 2</h3>
+        <p>Coming Soon</p>
+        <button class="event-button">Learn More</button>
+      </div>
+      
+      <div class="event-card">
+        <div class="event-icon">⚡</div>
+        <h3>Event 3</h3>
+        <p>Coming Soon</p>
+        <button class="event-button">Learn More</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Us Section -->
+  <section id="about" class="mobile-section">
+    <div class="section-content">
+      <h2 class="section-title">About Us</h2>
+      <p class="section-description">
+        Founded in 2024, Keplaar Esports is Canada's premier esports organization. 
+        We're dedicated to competitive excellence and building a thriving gaming community.
+      </p>
+      <div class="about-stats">
+        <div class="stat">
+          <h3>2024</h3>
+          <p>Founded</p>
+        </div>
+        <div class="stat">
+          <h3>5+</h3>
+          <p>Games</p>
+        </div>
+        <div class="stat">
+          <h3>Pro</h3>
+          <p>Team</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section id="team" class="mobile-section">
+    <div class="section-content">
+      <h2 class="section-title">Our Team</h2>
+      
+      <!-- Swipeable team cards -->
+      <div class="team-cards">
+        <div class="team-card">
+          <div class="team-photo">👤</div>
+          <h3>Amogh Ingale</h3>
+          <p class="team-role">CEO</p>
+          <button class="linkedin-button">LinkedIn</button>
+        </div>
+        
+        <div class="team-card">
+          <div class="team-photo">👤</div>
+          <h3>Min Zhao</h3>
+          <p class="team-role">CFO</p>
+          <button class="linkedin-button">LinkedIn</button>
+        </div>
+        
+        <div class="team-card">
+          <div class="team-photo">👤</div>
+          <h3>Jason Lee</h3>
+          <p class="team-role">CTO</p>
+          <button class="linkedin-button">LinkedIn</button>
+        </div>
+        
+        <div class="team-card">
+          <div class="team-photo">👤</div>
+          <h3>Andy Chen</h3>
+          <p class="team-role">CPO</p>
+          <button class="linkedin-button">LinkedIn</button>
+        </div>
+        
+        <div class="team-card">
+          <div class="team-photo">👤</div>
+          <h3>Ahmed Abdi</h3>
+          <p class="team-role">COO</p>
+          <button class="linkedin-button">LinkedIn</button>
+        </div>
+      </div>
+      
+      <p class="swipe-hint">← Swipe to see more →</p>
+    </div>
+  </section>
+
+  <!-- Giveaways Section -->
+  <section id="giveaways" class="mobile-section">
+    <div class="section-content">
+      <h2 class="section-title">Giveaways</h2>
+      <p class="section-description">
+        Stay tuned for exciting giveaways and exclusive merchandise!
+      </p>
+      <div class="giveaway-placeholder">
+        <div class="placeholder-icon">🎁</div>
+        <p>New giveaways coming soon</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Join Us Section -->
+  <section id="join" class="mobile-section">
+    <div class="section-content">
+      <h2 class="section-title">Join Us</h2>
+      
+      <!-- Social Media Links -->
+      <div class="social-links-mobile">
+        <a href="#" class="social-link" data-platform="instagram">
+          <img src="assets/icons/instagram.png" alt="Instagram">
+          <span>Instagram</span>
+        </a>
+        <a href="#" class="social-link" data-platform="twitter">
+          <img src="assets/icons/x.png" alt="Twitter">
+          <span>Twitter/X</span>
+        </a>
+        <a href="#" class="social-link" data-platform="youtube">
+          <img src="assets/icons/youtube.png" alt="YouTube">
+          <span>YouTube</span>
+        </a>
+        <a href="#" class="social-link" data-platform="discord">
+          <img src="assets/icons/discord.png" alt="Discord">
+          <span>Discord</span>
+        </a>
+      </div>
+      
+      <!-- Application Form Button -->
+      <button class="cta-button" id="show-mobile-form">
+        Apply to Join Team
+      </button>
+    </div>
+  </section>
+
+</div>
+
+<!-- Mobile Application Form Modal -->
+<div id="mobile-form-modal" class="mobile-modal" style="display: none;">
+  <div class="modal-content">
+    <button class="modal-close">&times;</button>
+    <h2>Join Keplaar Esports</h2>
+    
+    <form id="mobile-application-form">
+      <input type="text" name="name" placeholder="Full Name *" required>
+      <input type="email" name="email" placeholder="Email *" required>
+      <input type="tel" name="phone" placeholder="Phone *" required>
+      
+      <select name="game" required>
+        <option value="">Select Game *</option>
+        <option value="valorant">VALORANT</option>
+        <option value="fortnite">Fortnite</option>
+        <option value="dota2">Dota 2</option>
+        <option value="pubg">PUBG</option>
+      </select>
+      
+      <input type="text" name="rank" placeholder="Current Rank *" required>
+      <input type="text" name="game_id" placeholder="In-Game ID *" required>
+      
+      <button type="submit" class="submit-button">Submit Application</button>
+    </form>
+  </div>
+</div>
+
+<!-- Mobile Footer -->
+<footer id="mobile-footer">
+  <p>&copy; 2025 Keplaar Esports. All rights reserved.</p>
+  <p>Made in Canada 🇨🇦</p>
+</footer>

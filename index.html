@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Keplaar Esports - Canadian esports organization. Join our competitive gaming community.">
+  <title>Keplaar Esports</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/textures/logo.png">
+  
+  <!-- Minimal inline CSS for loading screen -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #0a0a14;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Loading Screen */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0a14;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loading-container {
+      text-align: center;
+      max-width: 500px;
+      padding: 40px;
+      width: 100%;
+    }
+
+    .loading-logo img {
+      width: 200px;
+      height: auto;
+      margin-bottom: 30px;
+      opacity: 0.9;
+      animation: logo-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes logo-pulse {
+      0%, 100% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+
+    .loading-title {
+      color: #ffffff;
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .loading-subtitle {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1rem;
+      font-weight: 300;
+      margin-bottom: 40px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      transition: width 0.3s ease;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+
+    .progress-percent {
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .progress-status {
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 300;
+    }
+
+    .device-info {
+      margin-top: 30px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .device-info strong {
+      color: #00aaff;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-container">
+      <div class="loading-logo">
+        <img src="assets/textures/logo.png" alt="Keplaar Esports">
+      </div>
+      
+      <div class="loading-text">
+        <h1 class="loading-title">KEPLAAR ESPORTS</h1>
+        <p class="loading-subtitle">Loading Experience...</p>
+      </div>
+      
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+        <div class="progress-info">
+          <span class="progress-percent">0%</span>
+          <span class="progress-status">Detecting device...</span>
+        </div>
+      </div>
+
+      <!-- Device info (shows after detection) -->
+      <div class="device-info" id="device-info" style="display: none;">
+        <strong>Device:</strong> <span id="device-type">Detecting...</span><br>
+        <strong>Loading:</strong> <span id="experience-type">...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Container (content loaded here) -->
+  <div id="app-container"></div>
+
+  <!-- Core Scripts (Always Load) -->
+  <script src="js/loadingManager.js"></script>
+  <script src="js/detector.js"></script>
+  <script src="js/loader.js"></script>
+
+  <!-- Initialize -->
+  <script>
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', async () => {
+      console.log('🎯 Keplaar Esports - Initializing...');
+
+      try {
+        // Step 1: Detect device
+        const deviceType = window.deviceDetector.detect();
+        
+        // Show device info
+        const deviceInfo = document.getElementById('device-info');
+        const deviceTypeSpan = document.getElementById('device-type');
+        const experienceTypeSpan = document.getElementById('experience-type');
+        
+        if (deviceInfo && deviceTypeSpan && experienceTypeSpan) {
+          deviceInfo.style.display = 'block';
+          deviceTypeSpan.textContent = deviceType.toUpperCase();
+          experienceTypeSpan.textContent = deviceType === 'mobile' ? '2D Mobile Version' : '3D Desktop Version';
+        }
+
+        // Small delay to show detection result
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Step 2: Load appropriate experience
+        await window.experienceLoader.init();
+
+        // Step 3: Hide loading screen after a brief moment
+        setTimeout(() => {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.style.transition = 'opacity 0.5s ease';
+            loadingScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+              loadingScreen.style.display = 'none';
+            }, 500);
+          }
+        }, 1000);
+
+      } catch (error) {
+        console.error('❌ Initialization failed:', error);
+        
+        // Show error in loading screen
+        const loadingContainer = document.querySelector('.loading-container');
+        if (loadingContainer) {
+          loadingContainer.innerHTML = `
+            <div style="text-align: center; color: white;">
+              <h2 style="color: #ff4646; margin-bottom: 20px;">⚠️ Initialization Error</h2>
+              <p style="margin-bottom: 30px;">Failed to load the experience. Please refresh the page.</p>
+              <button onclick="window.location.reload()" style="
+                padding: 12px 30px;
+                background: #00aaff;
+                border: none;
+                border-radius: 8px;
+                color: white;
+                font-size: 1rem;
+                cursor: pointer;
+              ">Reload Page</button>
+            </div>
+          `;
+        }
+      }
+    });
+
+    // Debug helper: Force device type
+    // Open console and type: forceDevice('mobile') or forceDevice('desktop')
+    window.forceDevice = (type) => {
+      console.log(`🔧 Forcing device type to: ${type}`);
+      window.deviceDetector.forceDevice(type);
+      window.location.reload();
+    };
+  </script>
+</body>
+</html>

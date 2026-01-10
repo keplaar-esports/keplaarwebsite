@@ -1,0 +1,204 @@
+<!-- ============================================ -->
+<!-- MOBILE-3D TEMPLATE - 3D Experience for Mobile -->
+<!-- ============================================ -->
+
+<!-- Intro UI Container (Transparent Background) -->
+<div id="mobile-intro-ui">
+  <div class="mobile-intro-overlay"></div>
+  <div class="mobile-intro-content">
+    <img src="assets/textures/logo.png" alt="Keplaar Esports Logo" class="mobile-intro-logo">
+    <h1 class="mobile-intro-title">KEPLAAR ESPORTS</h1>
+    <h2 class="mobile-intro-subtitle">Version 2.0 | Canada 2025</h2>
+    <button id="mobile-enter-button" class="mobile-enter-btn">Enter Experience</button>
+  </div>
+</div>
+
+<!-- Mobile Header (Hidden Initially) -->
+<header id="mobile-header" style="display: none;">
+  <div class="mobile-header-content">
+    <img src="assets/textures/logo.png" alt="Keplaar Esports" class="mobile-logo">
+    <h1 class="mobile-title">KEPLAAR ESPORTS</h1>
+    
+    <!-- Hamburger Menu Button -->
+    <button id="mobile-menu-toggle" class="hamburger" aria-label="Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+  
+  <!-- Progress Bar -->
+  <div class="mobile-progress-bar">
+    <div class="mobile-progress-fill"></div>
+  </div>
+</header>
+
+<!-- Hamburger Navigation Menu -->
+<nav id="mobile-nav-menu" class="mobile-nav">
+  <div class="mobile-nav-content">
+    <!-- Navigation Links -->
+    <div class="mobile-nav-links">
+      <a href="#" class="mobile-nav-link active" data-screen="screen1">
+        <span class="nav-icon">🎮</span>
+        <span>Events</span>
+      </a>
+      <a href="#" class="mobile-nav-link" data-screen="screen2">
+        <span class="nav-icon">ℹ️</span>
+        <span>About Us</span>
+      </a>
+      <a href="#" class="mobile-nav-link" data-screen="screen3">
+        <span class="nav-icon">👥</span>
+        <span>Our Team</span>
+      </a>
+      <a href="#" class="mobile-nav-link" data-screen="screen4">
+        <span class="nav-icon">🎁</span>
+        <span>Giveaways</span>
+      </a>
+    </div>
+    
+    <!-- Social Media Section -->
+    <div class="mobile-nav-social">
+      <p class="social-title">Follow Us</p>
+      <div class="social-links">
+        <a href="#" class="social-link" data-platform="instagram" aria-label="Instagram">
+          <img src="assets/icons/instagram.png" alt="Instagram">
+        </a>
+        <a href="#" class="social-link" data-platform="twitter" aria-label="Twitter">
+          <img src="assets/icons/x.png" alt="Twitter/X">
+        </a>
+        <a href="#" class="social-link" data-platform="youtube" aria-label="YouTube">
+          <img src="assets/icons/youtube.png" alt="YouTube">
+        </a>
+        <a href="#" class="social-link" data-platform="discord" aria-label="Discord">
+          <img src="assets/icons/discord.png" alt="Discord">
+        </a>
+      </div>
+    </div>
+    
+    <!-- Join Us Button -->
+    <button id="mobile-show-form" class="mobile-join-btn">Join Our Team</button>
+  </div>
+</nav>
+
+<!-- Menu Overlay -->
+<div id="mobile-nav-overlay" class="nav-overlay"></div>
+
+<!-- Application Form Modal -->
+<div id="mobile-form-modal" class="mobile-modal" style="display: none;">
+  <div class="modal-content">
+    <button class="modal-close" aria-label="Close">&times;</button>
+    <h2>Join Keplaar Esports</h2>
+    <p class="form-subtitle">Apply to become part of our competitive team</p>
+    
+    <form id="mobile-application-form">
+      <input type="text" name="name" placeholder="Full Name *" required>
+      <input type="email" name="email" placeholder="Email *" required>
+      <input type="tel" name="phone" placeholder="Phone *" required>
+      
+      <select name="game" required>
+        <option value="">Select Game *</option>
+        <option value="valorant">VALORANT</option>
+        <option value="fortnite">Fortnite</option>
+        <option value="dota2">Dota 2</option>
+        <option value="pubg">PUBG</option>
+      </select>
+      
+      <input type="text" name="rank" placeholder="Current Rank *" required>
+      <input type="text" name="game_id" placeholder="In-Game ID *" required>
+      
+      <button type="submit" class="submit-button">Submit Application</button>
+    </form>
+  </div>
+</div>
+
+<!-- Debug Info (Remove in production) -->
+<div id="debug-info" style="
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 10px;
+  font-size: 11px;
+  border-radius: 5px;
+  z-index: 10000;
+  font-family: monospace;
+  display: none;
+">
+  <div>Device: <span id="debug-device">-</span></div>
+  <div>Performance: <span id="debug-perf">-</span></div>
+  <div>Scroll: <span id="debug-scroll">0%</span></div>
+  <div>Camera: <span id="debug-camera">intro</span></div>
+</div>
+
+<!-- Inline Script for Basic Setup -->
+<script>
+console.log('📱 Mobile-3D template loaded');
+
+// Show debug info if URL has ?debug=true
+if (window.location.search.includes('debug=true')) {
+  document.getElementById('debug-info').style.display = 'block';
+  
+  // Update debug info
+  const updateDebug = () => {
+    document.getElementById('debug-device').textContent = window.deviceDetector?.device || 'unknown';
+    document.getElementById('debug-perf').textContent = window.deviceDetector?.performanceScore || '0';
+  };
+  
+  setInterval(updateDebug, 1000);
+}
+
+// Basic hamburger toggle (enhanced by mobileUI.js later)
+const hamburger = document.getElementById('mobile-menu-toggle');
+const navMenu = document.getElementById('mobile-nav-menu');
+const navOverlay = document.getElementById('mobile-nav-overlay');
+
+if (hamburger && navMenu) {
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navMenu.classList.toggle('active');
+    navOverlay.classList.toggle('active');
+  });
+  
+  navOverlay.addEventListener('click', () => {
+    hamburger.classList.remove('active');
+    navMenu.classList.remove('active');
+    navOverlay.classList.remove('active');
+  });
+}
+
+// Form modal handlers (enhanced by formHandler.js later)
+const showFormBtn = document.getElementById('mobile-show-form');
+const formModal = document.getElementById('mobile-form-modal');
+const closeFormBtn = formModal?.querySelector('.modal-close');
+
+if (showFormBtn && formModal) {
+  showFormBtn.addEventListener('click', () => {
+    formModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // Close menu
+    hamburger?.classList.remove('active');
+    navMenu?.classList.remove('active');
+    navOverlay?.classList.remove('active');
+  });
+}
+
+if (closeFormBtn) {
+  closeFormBtn.addEventListener('click', () => {
+    formModal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+  });
+}
+
+if (formModal) {
+  formModal.addEventListener('click', (e) => {
+    if (e.target === formModal) {
+      formModal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+  });
+}
+
+console.log('✅ Mobile-3D template ready');
+</script>

@@ -1,0 +1,329 @@
+/* ============================================ */
+/* MOBILE RESPONSIVE.CSS - Breakpoints & Sizes */
+/* ============================================ */
+
+/* Extra Small Phones (< 375px) */
+@media (max-width: 374px) {
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .hero-section h1 {
+    font-size: 2rem;
+  }
+
+  .hero-logo {
+    width: 120px;
+  }
+
+  .cta-button {
+    padding: 12px 30px;
+    font-size: 1rem;
+  }
+
+  .event-card {
+    padding: 20px;
+  }
+
+  .about-stats {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .team-card {
+    min-width: 220px;
+  }
+
+  .social-links-mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Small Phones (375px - 479px) */
+@media (min-width: 375px) and (max-width: 479px) {
+  .section-title {
+    font-size: 2.2rem;
+  }
+
+  .hero-section h1 {
+    font-size: 2.2rem;
+  }
+}
+
+/* Standard Phones (480px - 767px) */
+@media (min-width: 480px) and (max-width: 767px) {
+  .section-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+
+  .section-content {
+    padding: 0 30px;
+  }
+
+  .event-card {
+    padding: 30px;
+  }
+
+  .team-card {
+    min-width: 280px;
+  }
+}
+
+/* Tablets Portrait (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .section-title {
+    font-size: 3rem;
+  }
+
+  .hero-section h1 {
+    font-size: 3rem;
+  }
+
+  .hero-logo {
+    width: 180px;
+  }
+
+  .section-content {
+    max-width: 700px;
+  }
+
+  .event-card {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    gap: 25px;
+  }
+
+  .event-icon {
+    font-size: 4rem;
+    margin-bottom: 0;
+  }
+
+  .event-card h3 {
+    font-size: 1.8rem;
+  }
+
+  .about-stats {
+    gap: 30px;
+  }
+
+  .stat h3 {
+    font-size: 2.5rem;
+  }
+
+  .team-card {
+    min-width: 300px;
+  }
+
+  .social-links-mobile {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  #mobile-header {
+    padding: 20px 40px;
+  }
+
+  .mobile-nav-menu {
+    max-width: 350px;
+  }
+}
+
+/* Landscape Mode */
+@media (orientation: landscape) and (max-height: 500px) {
+  .mobile-section {
+    min-height: auto;
+    padding: 60px 20px 40px;
+  }
+
+  .hero-section {
+    min-height: 100vh;
+  }
+
+  .hero-logo {
+    width: 100px;
+    margin-bottom: 20px;
+  }
+
+  .hero-section h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  .hero-tagline {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+
+  .team-cards {
+    gap: 15px;
+  }
+
+  .team-card {
+    min-width: 200px;
+    padding: 20px;
+  }
+
+  .team-photo {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+  }
+}
+
+/* Large Tablets / Small Laptops (1024px+) */
+@media (min-width: 1024px) {
+  /* At this size, desktop version should load instead */
+  /* But if mobile is forced, make it look decent */
+  
+  .section-content {
+    max-width: 800px;
+  }
+
+  .section-title {
+    font-size: 3.5rem;
+  }
+
+  .hero-section h1 {
+    font-size: 3.5rem;
+  }
+
+  .hero-logo {
+    width: 200px;
+  }
+
+  .event-card {
+    padding: 35px;
+  }
+
+  .about-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+  }
+
+  .team-card {
+    min-width: 320px;
+  }
+
+  .social-links-mobile {
+    max-width: 600px;
+    margin: 0 auto 30px;
+  }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2),
+       (min-resolution: 192dpi) {
+  /* Use higher quality assets if available */
+  .hero-logo,
+  .mobile-logo {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark Mode Support (if OS uses dark mode) */
+@media (prefers-color-scheme: dark) {
+  /* Already dark by default */
+}
+
+/* Light Mode Support (if needed) */
+@media (prefers-color-scheme: light) {
+  /* Keep dark theme even in light mode */
+  /* This is intentional for the esports aesthetic */
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .hero-logo {
+    animation: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .event-card,
+  .team-card,
+  .social-link {
+    border-width: 2px;
+  }
+
+  .cta-button {
+    border: 2px solid white;
+  }
+}
+
+/* Print Styles */
+@media print {
+  #mobile-header,
+  #mobile-footer,
+  .mobile-nav-menu,
+  .cta-button {
+    display: none;
+  }
+
+  .mobile-section {
+    page-break-inside: avoid;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+}
+
+/* Safe Areas for Notched Devices */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  #mobile-header {
+    padding-top: max(15px, env(safe-area-inset-top));
+  }
+
+  #mobile-footer {
+    padding-bottom: max(40px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Foldable Devices */
+@media (horizontal-viewport-segments: 2) {
+  .section-content {
+    max-width: 45vw;
+  }
+}
+
+/* Ultra-wide Screens */
+@media (min-width: 1400px) {
+  .mobile-section {
+    padding-left: 10%;
+    padding-right: 10%;
+  }
+}

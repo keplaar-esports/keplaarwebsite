@@ -1,0 +1,195 @@
+/* ============================================ */
+/* MOBILE NAVIGATION.CSS - Fixed Progress Bar */
+/* ============================================ */
+
+/* Mobile Header */
+#mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(10, 10, 20, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.mobile-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.mobile-logo {
+  width: 40px;
+  height: auto;
+}
+
+.mobile-title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  flex: 1;
+  margin-left: 15px;
+}
+
+/* Hamburger Menu */
+.hamburger {
+  width: 30px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0;
+  z-index: 1001;
+  position: relative;
+}
+
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Hamburger Active State */
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Mobile Navigation Menu */
+.mobile-nav-menu {
+  position: fixed;
+  top: 70px;
+  right: -100%;
+  width: 80%;
+  max-width: 300px;
+  height: calc(100vh - 70px);
+  background: rgba(10, 10, 20, 0.98);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 30px 0;
+  transition: right 0.3s ease;
+  z-index: 999;
+  overflow-y: auto;
+}
+
+.mobile-nav-menu.active {
+  right: 0;
+}
+
+.mobile-nav-menu a {
+  padding: 20px 30px;
+  color: white;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: all 0.3s ease;
+  display: block;
+}
+
+.mobile-nav-menu a:active {
+  background: rgba(255, 255, 255, 0.05);
+  border-left-color: #00aaff;
+  color: #00aaff;
+}
+
+.mobile-nav-menu a.active {
+  background: rgba(0, 170, 255, 0.1);
+  border-left-color: #00aaff;
+  color: #00aaff;
+}
+
+/* Navigation Overlay */
+.nav-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 998;
+}
+
+.nav-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Active Section Indicator */
+.mobile-nav-menu a::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  background: #00aaff;
+  transition: height 0.3s ease;
+}
+
+.mobile-nav-menu a.active::before {
+  height: 100%;
+}
+
+/* Mobile Footer */
+#mobile-footer {
+  padding: 40px 20px;
+  background: rgba(10, 10, 20, 0.8);
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#mobile-footer p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+#mobile-footer p:last-child {
+  margin-bottom: 0;
+}
+
+/* Scroll Progress Indicator - FIXED */
+.scroll-progress {
+  position: fixed;
+  top: 70px; /* Start below header */
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, #00aaff, #00ffaa);
+  z-index: 1001;
+  transition: width 0.1s ease, top 0.3s ease; /* 👈 Added top transition */
+}
+
+/* Safe Area for iPhone notch */
+@supports (padding: max(0px)) {
+  .mobile-header-content {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+  }
+}

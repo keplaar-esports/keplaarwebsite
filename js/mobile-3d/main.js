@@ -1,0 +1,284 @@
+// ============================================
+// MOBILE-3D MAIN.JS - Entry Point
+// ============================================
+
+console.log('📱 Mobile-3D main.js loaded');
+
+(async function initMobile3D() {
+    console.log('🎯 Initializing mobile-3D experience...');
+    
+    const loadingManager = window.loadingManager;
+    if (!loadingManager) {
+        console.error('❌ Loading manager not found');
+        return;
+    }
+    
+    try {
+        // Wait a moment for template to be in DOM
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // ========== PHASE 1: SETUP RENDERER ==========
+        loadingManager.updateProgress(10, 'Setting up renderer...');
+        
+        const renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true,
+            powerPreference: "high-performance"
+        });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit for performance
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 2.0;
+        renderer.physicallyCorrectLights = true;
+        
+        // Insert canvas as first child of body
+        if (document.body.firstChild) {
+            document.body.insertBefore(renderer.domElement, document.body.firstChild);
+        } else {
+            document.body.appendChild(renderer.domElement);
+        }
+        
+        // Start with canvas slightly visible
+        renderer.domElement.style.opacity = '0.3';
+        renderer.domElement.style.transition = 'opacity 1s ease';
+        
+        console.log('✅ Renderer created');
+        loadingManager.updateProgress(20, 'Renderer ready');
+        
+        // ========== PHASE 2: CREATE SCENE ==========
+        loadingManager.updateProgress(30, 'Creating scene...');
+        
+        const sceneManager = new Mobile3DSceneManager();
+        const scene = sceneManager.scene;
+        
+        console.log('✅ Scene created');
+        loadingManager.updateProgress(40, 'Scene ready');
+        
+        // ========== PHASE 3: LOAD ENVIRONMENT ==========
+        loadingManager.updateProgress(50, 'Loading environment...');
+        
+        await sceneManager.loadEnvironment(renderer);
+        
+        console.log('✅ Environment loaded');
+        loadingManager.updateProgress(70, 'Environment ready');
+        
+        // ========== PHASE 4: INITIALIZE CONTROLLERS ==========
+        loadingManager.updateProgress(80, 'Initializing controllers...');
+        
+        // Create camera controller with proportional scroll
+        const cameraController = new Mobile3DCameraController(renderer);
+        const camera = cameraController.camera;
+        
+        // Create scroll controller
+        const scrollController = new Mobile3DScrollController(cameraController);
+        
+        // Create mobile UI controller
+        const mobileUI = new Mobile3DUI();
+        
+        // Create interaction manager (touch events)
+        const interactionManager = new Mobile3DInteraction(scene, camera, renderer);
+        
+        console.log('✅ Controllers initialized');
+        loadingManager.updateProgress(90, 'Controllers ready');
+        
+        // ========== PHASE 5: SETUP GLOBAL APP ==========
+        window.mobile3DApp = {
+            renderer: renderer,
+            scene: scene,
+            camera: camera,
+            sceneManager: sceneManager,
+            cameraController: cameraController,
+            scrollController: scrollController,
+            mobileUI: mobileUI,
+            interactionManager: interactionManager
+        };
+        
+        console.log('✅ Global app object created');
+        
+        // ========== PHASE 6: START ANIMATION LOOP ==========
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Update camera controller
+            cameraController.update();
+            
+            // Render scene
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+        console.log('✅ Animation loop started');
+        
+        // ========== PHASE 7: FINALIZE ==========
+        loadingManager.updateProgress(100, 'Ready!');
+        
+        // Wait a moment then show intro
+        setTimeout(() => {
+            // Fade out loading screen
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.style.transition = 'opacity 0.6s ease';
+                loadingScreen.style.opacity = '0';
+                
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 600);
+            }
+            
+            // Show canvas more
+            renderer.domElement.style.opacity = '0.5';
+            
+            // Setup enter button
+            setupEnterButton();
+            
+            console.log('✅ Mobile-3D ready - waiting for user to enter');
+        }, 500);
+        
+        // ========== WINDOW RESIZE ==========
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // ========== CLEANUP ==========
+        window.addEventListener('beforeunload', () => {
+            if (sceneManager.pmremGenerator) {
+                sceneManager.pmremGenerator.dispose();
+            }
+        });
+        
+    } catch (error) {
+        console.error('❌ Failed to initialize mobile-3D:', error);
+        loadingManager.showError('Failed to load 3D experience. Please refresh.');
+    }
+})();
+
+/**
+ * Setup enter button to transition from intro to 3D experience
+ */
+function setupEnterButton() {
+    const enterButton = document.getElementById('mobile-enter-button');
+    const introUI = document.getElementById('mobile-intro-ui');
+    const mobileHeader = document.getElementById('mobile-header');
+    
+    if (!enterButton || !introUI) {
+        console.error('❌ Enter button or intro UI not found');
+        return;
+    }
+    
+    enterButton.addEventListener('click', async () => {
+        console.log('🚪 Entering mobile-3D experience...');
+        
+        // Disable button
+        enterButton.disabled = true;
+        enterButton.style.opacity = '0.5';
+        
+        // Get references
+        const app = window.mobile3DApp;
+        if (!app) {
+            console.error('❌ App not initialized');
+            return;
+        }
+        
+        // Fade out intro UI
+        introUI.style.transition = 'opacity 0.8s ease';
+        introUI.style.opacity = '0';
+        
+        // Make canvas fully visible
+        app.renderer.domElement.style.opacity = '1';
+        
+        // Wait for fade
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Hide intro UI completely
+        introUI.style.display = 'none';
+        
+        // Show mobile header
+        if (mobileHeader) {
+            mobileHeader.style.display = 'block';
+            setTimeout(() => {
+                mobileHeader.style.opacity = '1';
+            }, 50);
+        }
+        
+        // Move camera from intro to first screen
+        await app.cameraController.animateToPosition('screen1-left', 2);
+        
+        // Enable scrolling
+        app.scrollController.enableScroll();
+        
+        // Show scroll hint
+        showScrollHint();
+        
+        console.log('✅ Entered mobile-3D experience');
+    });
+}
+
+/**
+ * Show scroll hint for a few seconds
+ */
+function showScrollHint() {
+    const hint = document.createElement('div');
+    hint.className = 'scroll-hint';
+    hint.innerHTML = `
+        <div class="scroll-hint-icon"></div>
+        <span>Scroll to explore</span>
+    `;
+    document.body.appendChild(hint);
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+        hint.classList.add('hidden');
+        setTimeout(() => hint.remove(), 500);
+    }, 3000);
+}
+
+// Debug helpers
+if (window.location.search.includes('debug=true')) {
+    console.log('🐛 Debug mode enabled');
+    
+    // Add FPS counter
+    const fpsCounter = document.createElement('div');
+    fpsCounter.className = 'fps-counter show';
+    document.body.appendChild(fpsCounter);
+    
+    let lastTime = performance.now();
+    let frames = 0;
+    
+    function updateFPS() {
+        frames++;
+        const currentTime = performance.now();
+        
+        if (currentTime >= lastTime + 1000) {
+            const fps = Math.round((frames * 1000) / (currentTime - lastTime));
+            fpsCounter.textContent = `FPS: ${fps}`;
+            
+            // Warn if low FPS
+            if (fps < 30) {
+                fpsCounter.style.color = '#ff4444';
+            } else if (fps < 45) {
+                fpsCounter.style.color = '#ffaa00';
+            } else {
+                fpsCounter.style.color = '#00ff00';
+            }
+            
+            frames = 0;
+            lastTime = currentTime;
+        }
+        
+        requestAnimationFrame(updateFPS);
+    }
+    
+    updateFPS();
+    
+    // Expose app globally for console debugging
+    window.addEventListener('load', () => {
+        console.log('🎮 Debug commands available:');
+        console.log('  mobile3DApp - Access app object');
+        console.log('  mobile3DApp.cameraController.goToPosition("screen2-center")');
+        console.log('  mobile3DApp.scrollController.getScrollPercent()');
+    });
+}

@@ -1,0 +1,432 @@
+<!-- ============================================ -->
+<!-- DESKTOP TEMPLATE - Complete with Full Form -->
+<!-- ============================================ -->
+
+<!-- Intro UI Container -->
+<div id="ui-container">
+  <!-- Video Background -->
+  <div id="video-background">
+    <video id="bg-video" src="assets/textures/background.mp4" autoplay muted loop playsinline preload="auto"></video>
+  </div>
+
+  <!-- Intro Panel -->
+  <div id="ui-panel-1">
+    <img src="assets/textures/logo.png" alt="Keplaar Esports Logo" class="logo">
+    <h1>KEPLAAR ESPORTS</h1>
+    <h2>Version 2.0 | Canada 2025</h2>
+    <button id="enter-button">Enter Environment</button>
+  </div>
+</div>
+
+<!-- Navigation UI -->
+<div id="navigation-ui" style="display: none;">
+  <button id="previous-button">Previous Screen</button>
+  <button id="next-button">Next Screen</button>
+</div>
+
+<!-- Website Header -->
+<header id="website-header" style="display: none;">
+  <div class="header-left">
+    <a href="#" id="logo-link">
+      <img src="assets/textures/logo.png" alt="Keplaar Esports Logo" class="header-logo">
+      <span class="header-title">KEPLAAR ESPORTS</span>
+    </a>
+  </div>
+  
+  <nav class="header-right">
+    <ul class="nav-menu">
+      <li><a href="#" data-screen="events">Events</a></li>
+      <li><a href="#" data-screen="about">About Us</a></li>
+      <li><a href="#" data-screen="team">Our Team</a></li>
+      <li><a href="#" data-screen="giveaways">Giveaways</a></li>
+      <li><a href="#" data-screen="join">Join Us</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Social Media UI -->
+<div id="social-media-ui" class="blurred-ui" style="display: none;">
+  <div class="ui-content">
+    <button class="close-button">&times;</button>
+    <h2>Follow Us</h2>
+    <p class="subtitle">Stay connected with Keplaar Esports</p>
+    
+    <div class="social-grid">
+      <div class="social-item" data-platform="instagram">
+        <div class="social-logo">
+          <img src="assets/icons/instagram.png" alt="Instagram" class="social-icon">
+        </div>
+        <span class="social-name">Instagram</span>
+        <span class="social-handle">@keplaaresports</span>
+      </div>
+      
+      <div class="social-item" data-platform="twitter">
+        <div class="social-logo">
+          <img src="assets/icons/x.png" alt="Twitter/X" class="social-icon">
+        </div>
+        <span class="social-name">Twitter/X</span>
+        <span class="social-handle">@keplaaresports</span>
+      </div>
+      
+      <div class="social-item" data-platform="youtube">
+        <div class="social-logo">
+          <img src="assets/icons/youtube.png" alt="YouTube" class="social-icon">
+        </div>
+        <span class="social-name">YouTube</span>
+        <span class="social-handle">Keplaar Esports</span>
+      </div>
+      
+      <div class="social-item" data-platform="discord">
+        <div class="social-logo">
+          <img src="assets/icons/discord.png" alt="Discord" class="social-icon">
+        </div>
+        <span class="social-name">Discord</span>
+        <span class="social-handle">Join our community</span>
+      </div>
+    </div>
+    
+    <button id="next-to-form">
+      Continue to Contact Form
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- Contact Form UI - COMPLETE VERSION WITH SCROLL FIX -->
+<div id="contact-form-ui" class="blurred-ui" style="display: none;">
+  <div class="ui-content form-container">
+    <!-- Background Image Container -->
+    <div class="form-background">
+      <img src="assets/textures/fillupform.jpg" alt="Gaming Controllers Background" class="form-bg-image">
+    </div>
+    
+    <!-- Form Content - FIXED SCROLLING -->
+    <div class="form-content" style="overflow-y: auto; max-height: 80vh;">
+      <button class="close-button">&times;</button>
+      <div class="form-header">
+        <h2>Join Keplaar Esports</h2>
+        <p class="form-subtitle">Apply to become part of our competitive team</p>
+      </div>
+      
+      <form id="player-application-form" class="vertical-form">
+        <div class="form-group">
+          <label for="player-name">Full Name *</label>
+          <input type="text" id="player-name" name="name" required placeholder="Enter your full name">
+        </div>
+
+        <div class="form-group">
+          <label for="player-game">Primary Game *</label>
+          
+          <div class="custom-select-container">
+            <div class="custom-select-trigger" id="game-select-trigger">
+              <span class="selected-text">Select your primary game</span>
+              <span class="select-arrow">▼</span>
+            </div>
+            
+            <div class="custom-select-options" id="game-select-options">
+              <div class="custom-option" data-value="valorant" data-icon="🎯">
+                <span class="option-icon">🎯</span>
+                <span class="option-text">VALORANT</span>
+              </div>
+              <div class="custom-option" data-value="fortnite" data-icon="🏹">
+                <span class="option-icon">🏹</span>
+                <span class="option-text">Fortnite</span>
+              </div>
+              <div class="custom-option" data-value="dota2" data-icon="⚔️">
+                <span class="option-icon">⚔️</span>
+                <span class="option-text">Dota 2</span>
+              </div>
+              <div class="custom-option" data-value="pubg" data-icon="🔫">
+                <span class="option-icon">🔫</span>
+                <span class="option-text">PUBG</span>
+              </div>
+            </div>
+            
+            <!-- Hidden original select for form submission -->
+            <select id="player-game" name="game" required style="display: none;">
+              <option value="" disabled selected></option>
+              <option value="valorant">VALORANT</option>
+              <option value="fortnite">Fortnite</option>
+              <option value="dota2">Dota 2</option>
+              <option value="pubg">PUBG</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="player-rank">Current Rank *</label>
+          <input type="text" id="player-rank" name="rank" required placeholder="e.g., Radiant, Immortal, Diamond, etc.">
+        </div>
+
+        <div class="form-group">
+          <label for="player-id">In-Game ID *</label>
+          <input type="text" id="player-id" name="game_id" required placeholder="Your username in the game">
+        </div>
+
+        <div class="form-group">
+          <label for="player-email">Email Address *</label>
+          <input type="email" id="player-email" name="email" required placeholder="you@example.com">
+        </div>
+
+        <div class="form-group">
+          <label for="player-phone">Phone Number *</label>
+          <input type="tel" id="player-phone" name="phone" required placeholder="+1 (123) 456-7890">
+        </div>
+
+        <div class="form-group">
+          <label for="player-portfolio">Portfolio/Highlights (Optional)</label>
+          
+          <div class="file-upload-container">
+            <!-- Main file upload area -->
+            <div class="file-upload-area" id="file-drop-area">
+              <div class="upload-icon">📁</div>
+              <div class="upload-text">
+                <span class="upload-title">Drag & drop your PDF here</span>
+                <span class="upload-subtitle">or click to browse</span>
+              </div>
+              <input type="file" 
+                    id="player-portfolio" 
+                    name="portfolio" 
+                    accept=".pdf,.PDF" 
+                    class="file-input-hidden">
+            </div>
+            
+            <!-- Selected file info -->
+            <div class="file-selected-info" id="file-info" style="display: none;">
+              <div class="file-info-content">
+                <span class="file-icon-small">📄</span>
+                <div class="file-details">
+                  <span class="file-name" id="file-name"></span>
+                  <span class="file-size" id="file-size"></span>
+                </div>
+                <button type="button" class="file-remove" id="file-remove">×</button>
+              </div>
+            </div>
+            
+            <!-- Hint text -->
+            <div class="file-hint">
+              <span class="hint-icon">ℹ️</span>
+              Maximum file size: 5MB • PDF format only
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-button">
+          <span class="submit-text">Submit Application</span>
+          <span class="submit-loading" style="display: none;">⏳ Processing...</span>
+        </button>
+        
+        <p class="form-note">* Required fields</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- INLINE SCRIPT - Form Handlers -->
+<script>
+console.log('🎯 Desktop template loaded - setting up form handlers...');
+
+// Wait for form to be in DOM
+setTimeout(() => {
+    // Custom dropdown handler
+    const selectTrigger = document.getElementById('game-select-trigger');
+    const selectOptions = document.getElementById('game-select-options');
+    const hiddenSelect = document.getElementById('player-game');
+    const selectedText = selectTrigger?.querySelector('.selected-text');
+    
+    if (selectTrigger && selectOptions) {
+        // Toggle dropdown
+        selectTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectTrigger.classList.toggle('open');
+            selectOptions.classList.toggle('open');
+        });
+        
+        // Option selection
+        document.querySelectorAll('.custom-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                // Update UI
+                const value = option.dataset.value;
+                const text = option.querySelector('.option-text').textContent;
+                const icon = option.querySelector('.option-icon').textContent;
+                
+                selectedText.textContent = `${icon} ${text}`;
+                hiddenSelect.value = value;
+                
+                // Remove selected from all
+                document.querySelectorAll('.custom-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                option.classList.add('selected');
+                
+                // Close dropdown
+                selectTrigger.classList.remove('open');
+                selectOptions.classList.remove('open');
+            });
+        });
+        
+        // Close on outside click
+        document.addEventListener('click', () => {
+            selectTrigger.classList.remove('open');
+            selectOptions.classList.remove('open');
+        });
+    }
+    
+    // File upload handler
+    const fileInput = document.getElementById('player-portfolio');
+    const dropArea = document.getElementById('file-drop-area');
+    const fileInfo = document.getElementById('file-info');
+    const fileName = document.getElementById('file-name');
+    const fileSize = document.getElementById('file-size');
+    const fileRemove = document.getElementById('file-remove');
+    
+    if (fileInput && dropArea) {
+        // Click to upload
+        dropArea.addEventListener('click', () => fileInput.click());
+        
+        // File selected
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                displayFileInfo(file);
+            }
+        });
+        
+        // Drag and drop
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('drag-over');
+        });
+        
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('drag-over');
+        });
+        
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('drag-over');
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === 'application/pdf') {
+                fileInput.files = e.dataTransfer.files;
+                displayFileInfo(file);
+            }
+        });
+        
+        // Remove file
+        if (fileRemove) {
+            fileRemove.addEventListener('click', (e) => {
+                e.stopPropagation();
+                fileInput.value = '';
+                fileInfo.style.display = 'none';
+            });
+        }
+        
+        function displayFileInfo(file) {
+            fileName.textContent = file.name;
+            fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            fileInfo.style.display = 'block';
+        }
+    }
+    
+    // Form submission
+    const form = document.getElementById('player-application-form');
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = form.querySelector('.submit-button');
+            const submitText = form.querySelector('.submit-text');
+            const submitLoading = form.querySelector('.submit-loading');
+            
+            // Show loading state
+            submitText.style.display = 'none';
+            submitLoading.style.display = 'inline';
+            submitBtn.disabled = true;
+            
+            // Simulate submission
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Success
+            alert('✅ Application submitted successfully!');
+            form.reset();
+            
+            // Reset file upload UI
+            if (fileInfo) fileInfo.style.display = 'none';
+            if (selectedText) selectedText.textContent = 'Select your primary game';
+            
+            // Hide form
+            document.getElementById('contact-form-ui').style.display = 'none';
+            
+            // Reset button
+            submitText.style.display = 'inline';
+            submitLoading.style.display = 'none';
+            submitBtn.disabled = false;
+        });
+    }
+    
+    // 👇 FIXED: Close button for form
+    const formCloseBtn = document.querySelector('#contact-form-ui .close-button');
+    if (formCloseBtn) {
+        formCloseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('❌ Form close button clicked');
+            
+            if (window.app?.uiManager) {
+                window.app.uiManager.hideAllUI();
+            }
+        });
+        console.log('✅ Form close button handler attached');
+    }
+    
+    // 👇 FIXED: Close button for social media
+    const socialCloseBtn = document.querySelector('#social-media-ui .close-button');
+    if (socialCloseBtn) {
+        socialCloseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('❌ Social close button clicked');
+            
+            if (window.app?.uiManager) {
+                window.app.uiManager.hideAllUI();
+            }
+        });
+        console.log('✅ Social close button handler attached');
+    }
+    
+    // 👇 ALSO: Click outside to close modals
+    const socialUI = document.getElementById('social-media-ui');
+    const formUI = document.getElementById('contact-form-ui');
+    
+    if (socialUI) {
+        socialUI.addEventListener('click', (e) => {
+            // Close if clicking the overlay (not the content)
+            if (e.target === socialUI) {
+                console.log('❌ Clicked outside social modal');
+                if (window.app?.uiManager) {
+                    window.app.uiManager.hideAllUI();
+                }
+            }
+        });
+    }
+    
+    if (formUI) {
+        formUI.addEventListener('click', (e) => {
+            // Close if clicking the overlay (not the content)
+            if (e.target === formUI) {
+                console.log('❌ Clicked outside form modal');
+                if (window.app?.uiManager) {
+                    window.app.uiManager.hideAllUI();
+                }
+            }
+        });
+    }
+    
+    console.log('✅ Form handlers ready');
+}, 500);
+</script>
