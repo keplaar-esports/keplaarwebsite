@@ -1,5 +1,5 @@
 // ============================================
-// MAIN.JS - Perfect transition with no gap
+// MAIN.JS - Enhanced with scene animations
 // ============================================
 
 console.log('🚀 Starting Keplaar Esports experience...');
@@ -13,13 +13,13 @@ console.log('🚀 Starting Keplaar Esports experience...');
     
     if (uiContainer) {
         uiContainer.style.display = 'block';
-        uiContainer.style.opacity = '1'; // Already visible underneath
-        uiContainer.style.zIndex = '1'; // Behind loading screen
+        uiContainer.style.opacity = '1';
+        uiContainer.style.zIndex = '1';
         console.log('✅ Intro UI prepared (behind loading screen)');
     }
     
     if (loadingScreen) {
-        loadingScreen.style.zIndex = '9999'; // On top
+        loadingScreen.style.zIndex = '9999';
     }
     
     const loadingManager = window.loadingManager;
@@ -41,14 +41,16 @@ console.log('🚀 Starting Keplaar Esports experience...');
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 2.0;
+    renderer.toneMappingExposure = 2.2; // Slightly brighter
     renderer.physicallyCorrectLights = true;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     document.body.appendChild(renderer.domElement);
     
     renderer.domElement.style.opacity = '0';
     renderer.domElement.style.transition = 'opacity 1s ease';
     
-    console.log('✅ Renderer created (bright settings)');
+    console.log('✅ Enhanced renderer created');
     loadingManager.updateProgress(20, '3D engine ready');
     
     const sceneManager = new SceneManager();
@@ -56,7 +58,6 @@ console.log('🚀 Starting Keplaar Esports experience...');
     
     const cameraController = new CameraController(renderer);
     const camera = cameraController.camera;
-    const controls = cameraController.controls;
     
     cameraController.setInitialPosition();
     console.log('✅ Camera positioned');
@@ -122,7 +123,6 @@ console.log('🚀 Starting Keplaar Esports experience...');
     
     window.app = {
         camera: camera,
-        controls: controls,
         cameraController: cameraController,
         sceneManager: sceneManager,
         interactionManager: interactionManager,
@@ -132,61 +132,74 @@ console.log('🚀 Starting Keplaar Esports experience...');
     
     console.log('✅ App object created');
     
-    // Start animation loop
+    // ========== ENHANCED ANIMATION LOOP ==========
+    let startTime = Date.now();
+    
     function animate() {
         requestAnimationFrame(animate);
-        controls.update();
+        
+        const currentTime = Date.now() - startTime;
+        
+        // Animate scene elements (particles, lights, orbs)
+        sceneManager.animateScene(currentTime);
+        
+        // Subtle camera float effect - reduced for screen3
+        const currentPos = cameraController.getCurrentCameraPosition();
+        const floatMultiplier = currentPos === 'screen3' ? 0.3 : 1.0; // 70% less float on screen3
+        camera.position.y += Math.sin(currentTime * 0.0002) * 0.001 * floatMultiplier;
+        
+        cameraController.update();
         renderer.render(scene, camera);
     }
     animate();
-    console.log('✅ Animation loop started');
+    console.log('✅ Enhanced animation loop started with scene animations');
     
     setTimeout(() => {
         loadingManager.updateProgress(100, 'Ready!');
     }, 500);
     
-    // ========== PERFECT TRANSITION: Just fade out loading screen ==========
+    // ========== PERFECT TRANSITION ==========
     setTimeout(() => {
-        console.log('🎬 Starting perfect transition...');
+        console.log('🎬 Starting enhanced transition...');
         
-        // 1. Show 3D canvas slightly
-        renderer.domElement.style.opacity = '0.2';
+        // 1. Show 3D canvas with particles
+        renderer.domElement.style.opacity = '0.3';
         
         // 2. Start video
         if (video && videoReady) {
             video.play().catch(e => console.log('Video autoplay blocked'));
         }
         
-        // 3. Set video background opacity
+        // 3. Set video background opacity (more visible)
         const videoBackground = document.getElementById('video-background');
         if (videoBackground) {
-            videoBackground.style.opacity = '0.4';
+            videoBackground.style.opacity = '0.45'; // Increased from 0.35 to 0.45
         }
         
-        // 👇 4. JUST FADE OUT LOADING SCREEN (intro already visible underneath)
+        // 4. Fade out loading screen
         if (loadingScreen) {
-            loadingScreen.style.transition = 'opacity 0.6s ease';
+            loadingScreen.style.transition = 'opacity 0.8s ease';
             loadingScreen.style.opacity = '0';
             
-            console.log('✅ Perfect fade: loading screen disappearing');
+            console.log('✅ Enhanced fade transition started');
             
-            // Remove loading screen after fade
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
-            }, 600);
+            }, 800);
         }
         
-        // 5. Continue fading video to more transparent
+        // 5. Gradually increase canvas opacity
         setTimeout(() => {
+            renderer.domElement.style.opacity = '1';
             if (videoBackground) {
-                videoBackground.style.transition = 'opacity 1s ease';
-                videoBackground.style.opacity = '0.3';
+                videoBackground.style.transition = 'opacity 1.5s ease';
+                videoBackground.style.opacity = '0.5'; // Increased from 0.3 to 0.4
             }
-        }, 300);
+        }, 400);
         
-        console.log('✅ Desktop ready - waiting for user to enter');
+        console.log('✨ Enhanced desktop environment ready!');
         
-    }, 800); // Start transition a bit earlier
+    }, 800);
     
     // Window resize
     window.addEventListener('resize', () => {
@@ -197,11 +210,9 @@ console.log('🚀 Starting Keplaar Esports experience...');
     
     // Cleanup
     window.addEventListener('beforeunload', () => {
-        if (sceneManager.pmremGenerator) {
-            sceneManager.pmremGenerator.dispose();
-        }
+        sceneManager.dispose();
     });
     
-    console.log('✅ Desktop initialization complete!');
+    console.log('✅ Desktop initialization complete with enhanced visuals!');
     
 })();

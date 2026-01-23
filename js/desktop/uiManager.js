@@ -89,11 +89,11 @@ class UIManager {
         if (this.navigationUI) {
             this.navigationUI.style.display = 'flex';
             this.navigationUI.style.opacity = '0';
-            this.navigationUI.style.transition = 'opacity 0.5s ease';
+            this.navigationUI.style.transition = 'opacity 0.2s ease'; // Faster - 0.2s instead of 0.5s
             
             setTimeout(() => {
                 this.navigationUI.style.opacity = '1';
-            }, 100);
+            }, 10); // Much faster - 10ms instead of 100ms
         }
     }
 
@@ -136,21 +136,17 @@ class UIManager {
         if (!window.app?.cameraController) return;
         
         const currentPos = window.app.cameraController.getCurrentCameraPosition();
-        const currentIndex = window.app.cameraController.cameraPath.indexOf(currentPos);
-        const totalScreens = window.app.cameraController.cameraPath.length;
         
-        if (currentPos === 'outro') {
-            this.hideNavigation();
-            return;
-        }
+        // ✅ NEW: Enable navigation at ALL positions (full loop support)
+        // intro → previous goes to screen4, next goes to screen1
+        // outro → previous goes to screen4, next goes to screen1
+        // All other positions → both buttons work normally
         
-        if (this.previousButton) {
-            this.previousButton.disabled = currentIndex === 0;
-        }
+        // Enable both buttons everywhere - full bidirectional loop!
+        if (this.previousButton) this.previousButton.disabled = false;
+        if (this.nextButton) this.nextButton.disabled = false;
         
-        if (this.nextButton) {
-            this.nextButton.disabled = currentIndex === totalScreens - 1;
-        }
+        console.log(`🟢 Navigation buttons enabled at: ${currentPos}`);
     }
 
     showSocialMediaUI() {
@@ -230,10 +226,10 @@ class UIManager {
 
     openSocialMedia(platform) {
         const urls = {
-            instagram: 'https://instagram.com/keplaaresports',
+            instagram: 'https://www.instagram.com/keplaar_meme.gg?igsh=dzQ2c2hteDJua2dj',
             twitter: 'https://twitter.com/keplaaresports', 
             youtube: 'https://youtube.com/keplaaresports',
-            discord: 'https://discord.gg/keplaar'
+            discord: 'https://discord.gg/WsG2V2tRK'
         };
         
         if (urls[platform]) {
@@ -369,45 +365,70 @@ class UIManager {
     }
 
     setupEnhancedDropdown() {
-        const trigger = document.getElementById('game-select-trigger');
-        const options = document.getElementById('game-select-options');
-        const customOptions = document.querySelectorAll('.custom-option');
+        console.log('🎯 Setting up dropdown...');
+        
+        const display = document.getElementById('game-select-display');
+        const dropdown = document.getElementById('game-select-dropdown');
+        const options = document.querySelectorAll('.select-option');
         const hiddenSelect = document.getElementById('player-game');
-        const selectedText = document.querySelector('.selected-text');
+        const placeholder = display?.querySelector('.select-placeholder');
         
-        if (!trigger || !options) return;
-        
-        trigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            options.classList.toggle('open');
-            trigger.classList.toggle('open');
+        console.log('Dropdown elements:', {
+            display: display ? 'FOUND' : 'NOT FOUND',
+            dropdown: dropdown ? 'FOUND' : 'NOT FOUND',
+            options: options.length + ' options found',
+            hidden: hiddenSelect ? 'FOUND' : 'NOT FOUND'
         });
         
+        if (!display || !dropdown || !placeholder) {
+            console.log('❌ Dropdown elements missing');
+            return;
+        }
+        
+        // Click to toggle
+        display.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🖱️ DROPDOWN CLICKED!');
+            
+            const isOpen = display.classList.toggle('open');
+            dropdown.classList.toggle('open', isOpen);
+            console.log('Dropdown is now:', isOpen ? 'OPEN' : 'CLOSED');
+        });
+        
+        // Select option
+        options.forEach((option, index) => {
+            option.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const value = option.dataset.value;
+                const icon = option.dataset.icon;
+                const label = option.querySelector('.opt-label').textContent;
+                
+                console.log('✅ Selected:', value);
+                
+                placeholder.innerHTML = `${icon} ${label}`;
+                placeholder.classList.add('selected');
+                hiddenSelect.value = value;
+                
+                options.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                
+                display.classList.remove('open');
+                dropdown.classList.remove('open');
+            });
+        });
+        
+        // Close on outside click
         document.addEventListener('click', (e) => {
-            if (!trigger.contains(e.target) && !options.contains(e.target)) {
-                options.classList.remove('open');
-                trigger.classList.remove('open');
+            if (!display.contains(e.target) && !dropdown.contains(e.target)) {
+                display.classList.remove('open');
+                dropdown.classList.remove('open');
             }
         });
         
-        customOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const value = option.dataset.value;
-                const text = option.querySelector('.option-text').textContent;
-                const icon = option.dataset.icon;
-                
-                selectedText.innerHTML = `<span class="selected-icon">${icon}</span> ${text}`;
-                hiddenSelect.value = value;
-                
-                customOptions.forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-                
-                options.classList.remove('open');
-                trigger.classList.remove('open');
-                
-                hiddenSelect.dispatchEvent(new Event('change'));
-            });
-        });
+        console.log('✅ Dropdown setup complete!');
     }
 
     async handlePlayerApplication(e) {
@@ -450,7 +471,10 @@ class UIManager {
         this.showWebsiteHeader();
         this.showNavigation();
         
-        console.log('✅ All UI hidden');
+        // ✅ UPDATE: Update navigation buttons based on current position
+        this.updateNavigationButtons();
+        
+        console.log('✅ All UI hidden, navigation restored');
     }
 
     hideWebsiteHeader() {

@@ -108,7 +108,9 @@ class ExperienceLoader {
                 'css/shared/common.css',
                 'css/desktop/style.css',
                 'css/desktop/ui.css',
-                'css/desktop/websiteUI.css'
+                'css/desktop/websiteUI.css',
+                'css/desktop/forms.css',
+                'css/desktop/popups.css'
             ]);
 
             // Step 3: Load 3D Libraries (50%)
@@ -131,6 +133,7 @@ class ExperienceLoader {
             await this.loadScripts([
                 'js/desktop/sceneManager.js',
                 'js/desktop/cameraController.js',
+                'js/desktop/popupManager.js',
                 'js/desktop/interaction.js',
                 'js/desktop/uiManager.js',
                 'js/desktop/websiteUI.js'

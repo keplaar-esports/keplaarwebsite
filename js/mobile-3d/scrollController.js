@@ -1,5 +1,6 @@
 // ============================================
-// MOBILE-3D SCROLL CONTROLLER - Proportional Camera Movement
+// MOBILE-3D SCROLL CONTROLLER - FIXED VERSION
+// Direction-aware UI triggering
 // ============================================
 
 class Mobile3DScrollController {
@@ -11,6 +12,7 @@ class Mobile3DScrollController {
         this.currentScroll = 0; // 0-100%
         this.targetScroll = 0;
         this.scrollVelocity = 0;
+        this.lastScroll = 0; // Track previous scroll for direction
         
         // Touch tracking for momentum
         this.touchStartY = 0;
@@ -21,35 +23,45 @@ class Mobile3DScrollController {
         // Scroll limits
         this.scrollMin = 0;
         this.scrollMax = 100;
+        this.infiniteLoop = true;
         
-        // Scroll sensitivity (adjust these for feel)
-        this.scrollSensitivity = 0.15; // How much each pixel scrolls
-        this.touchSensitivity = 0.08; // How much each touch pixel scrolls
-        this.momentumDecay = 0.95; // Momentum decay rate
-        this.scrollSmoothing = 0.12; // Smoothing factor
+        // 🆕 DIRECTION TRACKING
+        this.scrollDirection = 'none'; // 'forward', 'backward', 'none'
+        this.previousScreen = null;
+        this.currentScreen = null;
+        
+        // 🆕 OUTRO UI STATE MANAGEMENT
+        this.outroUIState = {
+            hasShownThisVisit: false,     // 🔧 Track if UI shown THIS visit to outro
+            hasEnteredEnvironment: false, // Track if user entered environment
+            isAtOutro: false,             // Currently at outro
+            justLeftScreen4: false,       // 🔧 Just left screen4 (resets when leaving outro)
+            uiCurrentlyShowing: false     // 🔧 NEW: Prevent multiple UI calls
+        };
+        
+        // Scroll sensitivity
+        this.scrollSensitivity = 0.08; // Increased for better responsiveness
+        this.touchSensitivity = 0.06;  // Increased for better responsiveness
+        this.momentumDecay = 0.93;
+        this.scrollSmoothing = 0.25; // Increased from 0.12 for faster progress bar updates
         
         // Progress bar element
         this.progressBar = document.querySelector('.mobile-progress-fill');
         
-        // Setup event listeners (but don't enable yet)
+        // Setup event listeners
         this.setupEventListeners();
         
-        console.log('✅ Scroll controller initialized (disabled)');
+        console.log('✅ Scroll controller initialized with direction tracking');
     }
     
     /**
      * Setup event listeners for scroll and touch
      */
     setupEventListeners() {
-        // Mouse wheel for testing on desktop
         this.wheelHandler = (e) => this.onWheel(e);
-        
-        // Touch events for mobile
         this.touchStartHandler = (e) => this.onTouchStart(e);
         this.touchMoveHandler = (e) => this.onTouchMove(e);
         this.touchEndHandler = (e) => this.onTouchEnd(e);
-        
-        console.log('✅ Event listeners prepared');
     }
     
     /**
@@ -59,17 +71,16 @@ class Mobile3DScrollController {
         if (this.scrollEnabled) return;
         
         this.scrollEnabled = true;
+        this.outroUIState.hasEnteredEnvironment = true;
         
-        // Add event listeners
         window.addEventListener('wheel', this.wheelHandler, { passive: false });
         window.addEventListener('touchstart', this.touchStartHandler, { passive: false });
         window.addEventListener('touchmove', this.touchMoveHandler, { passive: false });
         window.addEventListener('touchend', this.touchEndHandler, { passive: false });
         
-        // Start update loop
         this.startUpdateLoop();
         
-        console.log('✅ Scroll enabled');
+        console.log('✅ Scroll enabled - environment entered');
     }
     
     /**
@@ -80,7 +91,6 @@ class Mobile3DScrollController {
         
         this.scrollEnabled = false;
         
-        // Remove event listeners
         window.removeEventListener('wheel', this.wheelHandler);
         window.removeEventListener('touchstart', this.touchStartHandler);
         window.removeEventListener('touchmove', this.touchMoveHandler);
@@ -90,19 +100,15 @@ class Mobile3DScrollController {
     }
     
     /**
-     * Handle wheel event (for desktop testing)
+     * Handle wheel event
      */
     onWheel(e) {
         if (!this.scrollEnabled) return;
         
         e.preventDefault();
         
-        // Update target scroll based on wheel delta
         const delta = e.deltaY * this.scrollSensitivity;
-        this.targetScroll += delta;
-        
-        // Clamp to limits
-        this.targetScroll = Math.max(this.scrollMin, Math.min(this.scrollMax, this.targetScroll));
+        this.updateScrollWithDelta(delta);
     }
     
     /**
@@ -111,16 +117,21 @@ class Mobile3DScrollController {
     onTouchStart(e) {
         if (!this.scrollEnabled) return;
         
-        // Prevent default to avoid page scroll
+        const target = e.target;
+        if (target.closest('.hamburger') || 
+            target.closest('.mobile-nav') || 
+            target.closest('.mobile-modal') ||
+            target.closest('#mobile-header')) {
+            return;
+        }
+        
         e.preventDefault();
         
-        // Record start position
         this.touchStartY = e.touches[0].clientY;
         this.lastTouchY = this.touchStartY;
         this.touchStartTime = performance.now();
         this.lastTouchTime = this.touchStartTime;
         
-        // Stop momentum
         this.scrollVelocity = 0;
     }
     
@@ -135,36 +146,134 @@ class Mobile3DScrollController {
         const currentY = e.touches[0].clientY;
         const currentTime = performance.now();
         
-        // Calculate delta
         const deltaY = this.lastTouchY - currentY;
         const deltaTime = currentTime - this.lastTouchTime;
         
-        // Update target scroll
         const scrollDelta = deltaY * this.touchSensitivity;
-        this.targetScroll += scrollDelta;
+        this.updateScrollWithDelta(scrollDelta);
         
-        // Clamp to limits
-        this.targetScroll = Math.max(this.scrollMin, Math.min(this.scrollMax, this.targetScroll));
-        
-        // Calculate velocity for momentum
         if (deltaTime > 0) {
-            this.scrollVelocity = scrollDelta / deltaTime * 16; // Normalize to 60fps
+            this.scrollVelocity = scrollDelta / deltaTime * 16;
         }
         
-        // Update last position
         this.lastTouchY = currentY;
         this.lastTouchTime = currentTime;
     }
     
     /**
-     * Handle touch end - apply momentum
+     * Handle touch end
      */
     onTouchEnd(e) {
         if (!this.scrollEnabled) return;
         
-        // Apply momentum if velocity is significant
         if (Math.abs(this.scrollVelocity) > 0.5) {
             this.applyMomentum();
+        }
+    }
+    
+    /**
+     * 🆕 UPDATE SCROLL WITH DELTA - CORE LOGIC
+     */
+    updateScrollWithDelta(delta) {
+        // Store previous scroll for direction detection
+        this.lastScroll = this.currentScroll;
+        
+        // Update target scroll
+        this.targetScroll += delta;
+        
+        // 🆕 DETECT SCROLL DIRECTION
+        if (delta > 0.1) {
+            this.scrollDirection = 'forward';
+        } else if (delta < -0.1) {
+            this.scrollDirection = 'backward';
+        }
+        
+        // 🆕 CHECK IF APPROACHING OUTRO FROM SCREEN4
+        const currentScreen = this.getCurrentScreen();
+        const approachingOutro = this.targetScroll >= 95 && currentScreen === 'screen4';
+        
+        if (approachingOutro && this.scrollDirection === 'forward') {
+            console.log('🎯 Approaching outro from screen4 - will trigger UI');
+            this.outroUIState.lastTriggerDirection = 'forward';
+        }
+        
+        // 🆕 HANDLE INFINITE LOOP WITH SPECIAL OUTRO LOGIC
+        if (this.infiniteLoop) {
+            if (this.targetScroll > this.scrollMax) {
+                // Wrapping forward: outro → screen1
+                console.log('🔄 Wrapping forward: outro → screen1');
+                
+                // 🔧 CHECK: Should we show UI?
+                // Only show if: coming from screen4 AND haven't shown yet AND not currently showing
+                if (this.outroUIState.justLeftScreen4 && 
+                    !this.outroUIState.hasShownThisVisit && 
+                    !this.outroUIState.uiCurrentlyShowing) {
+                    
+                    console.log('⏸️ PAUSING for UI - first time at outro from screen4');
+                    
+                    // Don't wrap yet - stay at outro
+                    this.targetScroll = this.scrollMax;
+                    
+                    // Mark that we're showing UI (prevents duplicate calls)
+                    this.outroUIState.uiCurrentlyShowing = true;
+                    
+                    // Show UI
+                    this.checkAndShowOutroUI('forward');
+                    
+                    // Disable scroll during UI
+                    this.scrollEnabled = false;
+                } else {
+                    // UI already shown or not coming from screen4 - just wrap
+                    if (!this.outroUIState.uiCurrentlyShowing) {
+                        console.log('➡️ Wrapping forward (UI already shown or not from screen4)');
+                        this.performWrapAround('forward');
+                    }
+                }
+                
+            } else if (this.targetScroll < this.scrollMin) {
+                // Wrapping backward: screen1 → outro
+                console.log('🔄 Wrapping backward: screen1 → outro');
+                
+                // Just wrap - never show UI on backward
+                this.performWrapAround('backward');
+                
+            } else {
+                // Normal scroll within bounds
+                this.targetScroll = Math.max(this.scrollMin, Math.min(this.scrollMax, this.targetScroll));
+            }
+        } else {
+            this.targetScroll = Math.max(this.scrollMin, Math.min(this.scrollMax, this.targetScroll));
+        }
+    }
+    
+    /**
+     * 🆕 PERFORM WRAP AROUND
+     */
+    performWrapAround(direction) {
+        if (direction === 'forward') {
+            this.targetScroll = this.scrollMin + (this.targetScroll - this.scrollMax);
+            this.currentScroll = this.scrollMin;
+        } else {
+            this.targetScroll = this.scrollMax + this.targetScroll;
+            this.currentScroll = this.scrollMax;
+        }
+    }
+    
+    /**
+     * 🆕 CHECK AND SHOW OUTRO UI
+     */
+    async checkAndShowOutroUI(direction) {
+        console.log('🔍 Outro UI - Showing modal');
+        
+        // Show social media UI
+        if (window.mobile3DApp?.mobileUI) {
+            await window.mobile3DApp.mobileUI.showOutroModal();
+            
+            // 🔧 After UI closes, mark as shown and reset flags
+            this.outroUIState.hasShownThisVisit = true;
+            this.outroUIState.uiCurrentlyShowing = false;
+            
+            console.log('✅ UI closed - marked as shown for this visit');
         }
     }
     
@@ -174,21 +283,14 @@ class Mobile3DScrollController {
     applyMomentum() {
         const momentumLoop = () => {
             if (Math.abs(this.scrollVelocity) < 0.1) {
-                // Stop momentum when velocity is very small
                 this.scrollVelocity = 0;
                 return;
             }
             
-            // Apply velocity to target scroll
-            this.targetScroll += this.scrollVelocity;
+            this.updateScrollWithDelta(this.scrollVelocity);
             
-            // Clamp to limits
-            this.targetScroll = Math.max(this.scrollMin, Math.min(this.scrollMax, this.targetScroll));
-            
-            // Decay velocity
             this.scrollVelocity *= this.momentumDecay;
             
-            // Continue loop
             requestAnimationFrame(momentumLoop);
         };
         
@@ -196,25 +298,27 @@ class Mobile3DScrollController {
     }
     
     /**
-     * Start update loop (smooth scrolling)
+     * Start update loop
      */
     startUpdateLoop() {
         const update = () => {
             if (!this.scrollEnabled) return;
             
-            // Smooth lerp to target scroll
+            // Smooth lerp to target scroll for camera
             this.currentScroll += (this.targetScroll - this.currentScroll) * this.scrollSmoothing;
             
-            // Update camera position based on scroll
+            // Update camera position
             this.cameraController.setPositionFromScroll(this.currentScroll);
             
-            // Update progress bar
-            this.updateProgressBar();
+            // Update progress bar DIRECTLY with target scroll for instant feedback
+            this.updateProgressBar(this.targetScroll);
             
-            // Update debug info if available
+            // 🆕 TRACK SCREEN CHANGES
+            this.trackScreenChanges();
+            
+            // Update debug info
             this.updateDebugInfo();
             
-            // Continue loop
             requestAnimationFrame(update);
         };
         
@@ -222,7 +326,67 @@ class Mobile3DScrollController {
     }
     
     /**
-     * Set scroll to specific percentage (for navigation)
+     * 🆕 TRACK SCREEN CHANGES
+     */
+    trackScreenChanges() {
+        const newScreen = this.getCurrentScreen();
+        
+        if (newScreen !== this.currentScreen) {
+            this.previousScreen = this.currentScreen;
+            this.currentScreen = newScreen;
+            
+            console.log(`📍 Screen changed: ${this.previousScreen} → ${this.currentScreen}`);
+            
+            // 🔧 RESET UI STATE WHEN LEAVING OUTRO
+            if (this.previousScreen === 'outro' && this.currentScreen !== 'outro') {
+                this.outroUIState.isAtOutro = false;
+                this.outroUIState.hasShownThisVisit = false; // Reset for next visit
+                this.outroUIState.justLeftScreen4 = false;
+                this.outroUIState.uiCurrentlyShowing = false; // Reset UI showing flag
+                console.log('📤 Left outro - UI state fully reset');
+            }
+            
+            // 🔧 MARK WHEN LEAVING SCREEN4 FOR OUTRO
+            if (this.previousScreen === 'screen4' && this.currentScreen === 'outro') {
+                this.outroUIState.justLeftScreen4 = true;
+                console.log('🎯 Just entered outro from screen4');
+                
+                // 🔧 WAIT 800MS FOR CAMERA TO FULLY SETTLE AT OUTRO (increased from 500ms)
+                if (!this.outroUIState.hasShownThisVisit && !this.outroUIState.uiCurrentlyShowing) {
+                    console.log('⏸️ At outro position - waiting for camera to fully settle...');
+                    this.outroUIState.uiCurrentlyShowing = true;
+                    
+                    // Wait longer for camera to settle and for velocity to be very low
+                    setTimeout(() => {
+                        // Triple-check: still at outro, not moving fast, and scroll progress is very close to 100
+                        const isAtOutro = this.getCurrentScreen() === 'outro';
+                        const isStable = Math.abs(this.scrollVelocity) < 0.3; // Stricter check
+                        const isNearEnd = this.currentScroll > 95; // Must be near the end
+                        
+                        if (isAtOutro && isStable && isNearEnd) {
+                            console.log('✅ Camera fully settled - showing UI');
+                            this.disableScroll();
+                            this.checkAndShowOutroUI('forward');
+                        } else {
+                            console.log('⚠️ Camera still moving or not at end - skipping UI');
+                            console.log(`  isAtOutro: ${isAtOutro}, isStable: ${isStable}, isNearEnd: ${isNearEnd}`);
+                            console.log(`  velocity: ${this.scrollVelocity.toFixed(3)}, scroll: ${this.currentScroll.toFixed(1)}%`);
+                            this.outroUIState.uiCurrentlyShowing = false;
+                        }
+                    }, 800); // Increased from 500ms to 800ms
+                }
+            }
+            
+            // Mark when entering outro
+            if (this.currentScreen === 'outro') {
+                this.outroUIState.isAtOutro = true;
+                console.log('📥 Entered outro position');
+            }
+        }
+    }
+    
+    /**
+     * Set scroll to specific percentage
      */
     setScroll(percent, immediate = false) {
         this.targetScroll = Math.max(this.scrollMin, Math.min(this.scrollMax, percent));
@@ -242,9 +406,11 @@ class Mobile3DScrollController {
     /**
      * Update progress bar
      */
-    updateProgressBar() {
+    updateProgressBar(scrollPercent) {
         if (this.progressBar) {
-            this.progressBar.style.width = `${this.currentScroll}%`;
+            // Use provided scroll percent or current scroll
+            const percent = scrollPercent !== undefined ? scrollPercent : this.currentScroll;
+            this.progressBar.style.width = `${percent}%`;
         }
     }
     
@@ -264,8 +430,7 @@ class Mobile3DScrollController {
     }
     
     /**
-     * Navigate to a specific screen (sets scroll to that position)
-     * @param {string} screenId - e.g., 'screen1', 'screen2'
+     * Navigate to specific screen
      */
     navigateToScreen(screenId) {
         const screenMap = {
@@ -282,12 +447,10 @@ class Mobile3DScrollController {
             return;
         }
         
-        // Get scroll percentage for this position
         const scrollPercent = this.cameraController.getScrollPercentForPosition(positionKey);
         
         console.log(`🎯 Navigating to ${screenId} (${scrollPercent.toFixed(1)}%)`);
         
-        // Set scroll to this percentage
         this.setScroll(scrollPercent);
     }
     
@@ -298,6 +461,13 @@ class Mobile3DScrollController {
         this.currentScroll = 0;
         this.targetScroll = 0;
         this.scrollVelocity = 0;
+        this.outroUIState = {
+            hasShownThisVisit: false,
+            hasEnteredEnvironment: false,
+            isAtOutro: false,
+            justLeftScreen4: false,
+            uiCurrentlyShowing: false
+        };
         this.updateProgressBar();
     }
     

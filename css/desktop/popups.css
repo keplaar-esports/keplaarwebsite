@@ -1,0 +1,563 @@
+/* ============================================ */
+/* ELEGANT POPUP SYSTEM - Events & Team Members */
+/* ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ============================================ */
+/* POPUP CONTAINER - Fixed position overlay */
+/* ============================================ */
+
+#hover-popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 2000;
+  overflow: hidden;
+}
+
+/* ============================================ */
+/* POPUP CARD - Premium glassmorphism design */
+/* ============================================ */
+
+.hover-popup-card {
+  position: absolute;
+  background: linear-gradient(135deg, 
+    rgba(10, 10, 26, 0.97), 
+    rgba(20, 20, 40, 0.95));
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 2px solid rgba(0, 170, 255, 0.4);
+  border-radius: 20px;
+  padding: 24px 28px;
+  min-width: 320px;
+  max-width: 400px;
+  opacity: 0;
+  transform: scale(0.85) translateY(10px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  pointer-events: auto; /* Enable mouse events */
+  cursor: default; /* Normal cursor on popup */
+  z-index: 2001; /* Above connector */
+}
+
+.hover-popup-card.active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Animated glow border */
+.hover-popup-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, 
+    rgba(0, 170, 255, 0.6), 
+    rgba(0, 255, 170, 0.4),
+    rgba(138, 43, 226, 0.5));
+  background-size: 200% 200%;
+  border-radius: 22px;
+  z-index: -1;
+  opacity: 0;
+  animation: borderPulse 3s ease infinite;
+  filter: blur(8px);
+}
+
+.hover-popup-card.active::before {
+  opacity: 0.6;
+}
+
+@keyframes borderPulse {
+  0%, 100% { 
+    background-position: 0% 50%;
+    opacity: 0.4;
+  }
+  50% { 
+    background-position: 100% 50%;
+    opacity: 0.7;
+  }
+}
+
+/* Decorative corner accent */
+.hover-popup-card::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle at center, 
+    rgba(0, 170, 255, 0.2) 0%, 
+    transparent 70%);
+  border-radius: 50%;
+  filter: blur(15px);
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { 
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+/* ============================================ */
+/* CONNECTOR LINE - Elegant leader line */
+/* ============================================ */
+
+.hover-popup-connector {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1999;
+}
+
+.hover-popup-connector.active {
+  opacity: 1;
+}
+
+.hover-popup-connector svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Main connector path */
+.connector-path {
+  fill: none;
+  stroke: url(#lineGradient);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 8px rgba(0, 170, 255, 0.6));
+}
+
+/* Animated glow effect on line */
+.connector-glow {
+  fill: none;
+  stroke: rgba(0, 170, 255, 0.5);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: blur(4px);
+  opacity: 0.8;
+}
+
+/* Connection point dot */
+.connector-dot {
+  fill: #00aaff;
+  filter: drop-shadow(0 0 8px rgba(0, 170, 255, 1));
+}
+
+/* ============================================ */
+/* POPUP CONTENT - Typography & Layout */
+/* ============================================ */
+
+/* Header Section */
+.popup-header {
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 170, 255, 0.2);
+  position: relative;
+}
+
+/* Decorative line under header */
+.popup-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, #00aaff, transparent);
+  box-shadow: 0 0 8px rgba(0, 170, 255, 0.6);
+  animation: lineExpand 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s backwards;
+}
+
+@keyframes lineExpand {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 60px;
+    opacity: 1;
+  }
+}
+
+.popup-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin: 0 0 8px 0;
+  background: linear-gradient(135deg, #ffffff, #00aaff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-transform: uppercase;
+  animation: titleSlide 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s backwards;
+}
+
+@keyframes titleSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.popup-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  letter-spacing: 0.5px;
+  animation: subtitleFade 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s backwards;
+}
+
+@keyframes subtitleFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Body Section */
+.popup-body {
+  margin-bottom: 18px;
+  animation: bodyFade 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.4s backwards;
+}
+
+@keyframes bodyFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-description {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+/* Info Grid */
+.popup-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.popup-info-item {
+  background: rgba(0, 170, 255, 0.05);
+  border: 1px solid rgba(0, 170, 255, 0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: all 0.3s ease;
+}
+
+.popup-info-item:hover {
+  background: rgba(0, 170, 255, 0.1);
+  border-color: rgba(0, 170, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.popup-info-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.popup-info-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #00aaff;
+  display: block;
+}
+
+/* Footer/Action Section */
+.popup-footer {
+  display: flex;
+  gap: 10px;
+  animation: footerSlide 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.5s backwards;
+}
+
+@keyframes footerSlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-button {
+  flex: 1;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, 
+    rgba(0, 170, 255, 0.15), 
+    rgba(0, 255, 170, 0.1));
+  border: 2px solid rgba(0, 170, 255, 0.4);
+  border-radius: 12px;
+  color: #00aaff;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.popup-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  transition: left 0.5s;
+}
+
+.popup-button:hover::before {
+  left: 100%;
+}
+
+.popup-button:hover {
+  background: linear-gradient(135deg, 
+    rgba(0, 170, 255, 0.25), 
+    rgba(0, 255, 170, 0.2));
+  border-color: #00ffaa;
+  color: #00ffaa;
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 25px rgba(0, 170, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.popup-button:active {
+  transform: translateY(0);
+}
+
+/* Primary button variant */
+.popup-button-primary {
+  background: linear-gradient(135deg, #00aaff, #00ffaa);
+  border-color: transparent;
+  color: white;
+  box-shadow: 
+    0 6px 20px rgba(0, 170, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.popup-button-primary:hover {
+  background: linear-gradient(135deg, #00bbff, #00ffbb);
+  box-shadow: 
+    0 10px 30px rgba(0, 170, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Icon in button */
+.button-icon {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.popup-button:hover .button-icon {
+  transform: scale(1.2);
+}
+
+/* ============================================ */
+/* EVENT POPUP - Specific styling */
+/* ============================================ */
+
+.popup-card-event .popup-header {
+  background: linear-gradient(135deg, 
+    rgba(0, 170, 255, 0.08), 
+    rgba(138, 43, 226, 0.05));
+  margin: -24px -28px 20px -28px;
+  padding: 24px 28px 20px 28px;
+  border-radius: 18px 18px 0 0;
+  border-bottom: 2px solid rgba(0, 170, 255, 0.2);
+}
+
+.popup-event-status {
+  display: inline-block;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, 
+    rgba(255, 193, 7, 0.2), 
+    rgba(255, 152, 0, 0.15));
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  border-radius: 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ffc107;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { 
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+  }
+}
+
+/* ============================================ */
+/* TEAM MEMBER POPUP - Specific styling */
+/* ============================================ */
+
+.popup-card-team .popup-header {
+  background: linear-gradient(135deg, 
+    rgba(0, 170, 255, 0.08), 
+    rgba(0, 255, 170, 0.05));
+  margin: -24px -28px 20px -28px;
+  padding: 24px 28px 20px 28px;
+  border-radius: 18px 18px 0 0;
+  border-bottom: 2px solid rgba(0, 170, 255, 0.2);
+}
+
+.popup-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, 
+    rgba(0, 170, 255, 0.2), 
+    rgba(0, 255, 170, 0.15));
+  border: 1px solid rgba(0, 170, 255, 0.4);
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.role-badge-icon {
+  font-size: 1.2rem;
+}
+
+.role-badge-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #00aaff;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+/* LinkedIn icon styling */
+.linkedin-icon {
+  width: 18px;
+  height: 18px;
+  filter: brightness(0) saturate(100%) invert(56%) sepia(86%) saturate(2995%) hue-rotate(169deg) brightness(101%) contrast(101%);
+  transition: all 0.3s ease;
+}
+
+.popup-button:hover .linkedin-icon {
+  filter: brightness(0) saturate(100%) invert(79%) sepia(89%) saturate(2476%) hue-rotate(100deg) brightness(96%) contrast(106%);
+}
+
+/* ============================================ */
+/* RESPONSIVE DESIGN */
+/* ============================================ */
+
+@media (max-width: 768px) {
+  .hover-popup-card {
+    min-width: 280px;
+    max-width: 340px;
+    padding: 20px 24px;
+  }
+  
+  .popup-title {
+    font-size: 1.3rem;
+  }
+  
+  .popup-info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .popup-footer {
+    flex-direction: column;
+  }
+}
+
+/* ============================================ */
+/* ACCESSIBILITY */
+/* ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-popup-card,
+  .hover-popup-connector,
+  .connector-path,
+  .popup-title,
+  .popup-subtitle,
+  .popup-body,
+  .popup-footer {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .hover-popup-card.active {
+    transform: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .hover-popup-card {
+    border-width: 3px;
+    border-color: #00aaff;
+  }
+  
+  .popup-button {
+    border-width: 3px;
+  }
+}

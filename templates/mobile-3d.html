@@ -16,15 +16,20 @@
 <!-- Mobile Header (Hidden Initially) -->
 <header id="mobile-header" style="display: none;">
   <div class="mobile-header-content">
-    <img src="assets/textures/logo.png" alt="Keplaar Esports" class="mobile-logo">
-    <h1 class="mobile-title">KEPLAAR ESPORTS</h1>
-    
-    <!-- Hamburger Menu Button -->
-    <button id="mobile-menu-toggle" class="hamburger" aria-label="Menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+    <!-- Top Row: Logo, Title and Hamburger - ALL IN ONE LINE -->
+    <div class="mobile-header-top">
+      <img src="assets/textures/logo.png" alt="Keplaar Esports" class="mobile-logo">
+      
+      <!-- Title in the middle -->
+      <h1 class="mobile-title">KEPLAAR ESPORTS</h1>
+      
+      <!-- Hamburger Menu Button -->
+      <button id="mobile-menu-toggle" class="hamburger" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
   </div>
   
   <!-- Progress Bar -->
@@ -106,6 +111,34 @@
       <input type="text" name="rank" placeholder="Current Rank *" required>
       <input type="text" name="game_id" placeholder="In-Game ID *" required>
       
+      <!-- File Upload Section -->
+      <div class="mobile-file-upload">
+        <label class="file-upload-label">Portfolio/Highlights (Optional)</label>
+        <div class="file-upload-container">
+          <div class="file-drop-zone" id="mobile3d-file-drop">
+            <div class="drop-zone-content">
+              <span class="file-icon">📄</span>
+              <span class="file-text">Tap to upload PDF</span>
+              <span class="file-hint">Max 5MB</span>
+            </div>
+            <input type="file" 
+                   id="mobile3d-portfolio" 
+                   name="portfolio" 
+                   accept=".pdf,.PDF" 
+                   class="file-input-hidden">
+          </div>
+          
+          <div class="file-preview" id="mobile3d-file-preview" style="display: none;">
+            <span class="preview-icon">📄</span>
+            <div class="preview-info">
+              <span class="preview-name" id="mobile3d-file-name"></span>
+              <span class="preview-size" id="mobile3d-file-size"></span>
+            </div>
+            <button type="button" class="preview-remove" id="mobile3d-file-remove">✕</button>
+          </div>
+        </div>
+      </div>
+      
       <button type="submit" class="submit-button">Submit Application</button>
     </form>
   </div>
@@ -130,6 +163,10 @@
   <div>Scroll: <span id="debug-scroll">0%</span></div>
   <div>Camera: <span id="debug-camera">intro</span></div>
 </div>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config/supabase.js"></script>
 
 <!-- Inline Script for Basic Setup -->
 <script>
@@ -200,5 +237,155 @@ if (formModal) {
   });
 }
 
-console.log('✅ Mobile-3D template ready');
+// ===== FILE UPLOAD HANDLER FOR MOBILE-3D =====
+const mobile3dFileInput = document.getElementById('mobile3d-portfolio');
+const mobile3dDropZone = document.getElementById('mobile3d-file-drop');
+const mobile3dFilePreview = document.getElementById('mobile3d-file-preview');
+const mobile3dFileName = document.getElementById('mobile3d-file-name');
+const mobile3dFileSize = document.getElementById('mobile3d-file-size');
+const mobile3dFileRemove = document.getElementById('mobile3d-file-remove');
+
+if (mobile3dFileInput && mobile3dDropZone) {
+  // Click to upload
+  mobile3dDropZone.addEventListener('click', () => mobile3dFileInput.click());
+  
+  // Handle file selection
+  mobile3dFileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file && file.type === 'application/pdf') {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        mobile3dFileInput.value = '';
+        return;
+      }
+      mobile3dFileName.textContent = file.name;
+      mobile3dFileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+      mobile3dDropZone.style.display = 'none';
+      mobile3dFilePreview.style.display = 'flex';
+    } else {
+      alert('Please select a PDF file');
+      mobile3dFileInput.value = '';
+    }
+  });
+  
+  // Remove file
+  if (mobile3dFileRemove) {
+    mobile3dFileRemove.addEventListener('click', (e) => {
+      e.stopPropagation();
+      mobile3dFileInput.value = '';
+      mobile3dDropZone.style.display = 'flex';
+      mobile3dFilePreview.style.display = 'none';
+    });
+  }
+}
+
+// ===== FORM SUBMISSION HANDLER FOR MOBILE-3D =====
+const mobile3dForm = document.getElementById('mobile-application-form');
+if (mobile3dForm) {
+  mobile3dForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitBtn = mobile3dForm.querySelector('.submit-button');
+    const originalText = submitBtn.textContent;
+    
+    submitBtn.textContent = 'Submitting...';
+    submitBtn.disabled = true;
+    
+    try {
+      // Check if Supabase is ready
+      if (!window.supabaseClient) {
+        throw new Error('Supabase not initialized. Please refresh the page.');
+      }
+      
+      // Get form data
+      const formData = new FormData(mobile3dForm);
+      const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        game: formData.get('game'),
+        rank: formData.get('rank'),
+        game_id: formData.get('game_id')
+      };
+      
+      console.log('📝 [Mobile-3D] Submitting application:', data);
+      
+      // Handle file upload if exists
+      let portfolioUrl = null;
+      let portfolioName = null;
+      let portfolioSize = null;
+      
+      if (mobile3dFileInput && mobile3dFileInput.files.length > 0) {
+        const file = mobile3dFileInput.files[0];
+        console.log('📄 [Mobile-3D] Uploading file:', file.name);
+        
+        // Upload to Supabase Storage
+        const fileName = `${Date.now()}_${file.name}`;
+        const { data: uploadData, error: uploadError } = await window.supabaseClient
+          .storage
+          .from('portfolios')
+          .upload(fileName, file);
+        
+        if (uploadError) {
+          console.error('❌ File upload error:', uploadError);
+          throw new Error('Failed to upload file: ' + uploadError.message);
+        }
+        
+        console.log('✅ File uploaded:', uploadData);
+        
+        // Get public URL
+        const { data: urlData } = window.supabaseClient
+          .storage
+          .from('portfolios')
+          .getPublicUrl(fileName);
+        
+        portfolioUrl = urlData.publicUrl;
+        portfolioName = file.name;
+        portfolioSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+        
+        console.log('🔗 File URL:', portfolioUrl);
+      }
+      
+      // Insert into database
+      const { data: dbData, error: dbError } = await window.supabaseClient
+        .from('applications')
+        .insert([{
+          ...data,
+          portfolio_url: portfolioUrl,
+          portfolio_name: portfolioName,
+          portfolio_size: portfolioSize
+        }])
+        .select();
+      
+      if (dbError) {
+        console.error('❌ Database error:', dbError);
+        throw new Error('Failed to submit application: ' + dbError.message);
+      }
+      
+      console.log('✅ Application saved:', dbData);
+      
+      // Success!
+      alert('✅ Application submitted successfully! We\'ll review it and get back to you soon.');
+      mobile3dForm.reset();
+      
+      // Reset file upload UI
+      if (mobile3dFilePreview && mobile3dDropZone) {
+        mobile3dFilePreview.style.display = 'none';
+        mobile3dDropZone.style.display = 'flex';
+      }
+      
+      formModal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      
+    } catch (error) {
+      console.error('❌ [Mobile-3D] Submission error:', error);
+      alert('❌ Failed to submit: ' + error.message + '\n\nPlease try again or contact us directly.');
+    } finally {
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    }
+  });
+}
+
+console.log('✅ Mobile-3D template ready with file upload');
 </script>

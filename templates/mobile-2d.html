@@ -213,6 +213,34 @@
       <input type="text" name="rank" placeholder="Current Rank *" required>
       <input type="text" name="game_id" placeholder="In-Game ID *" required>
       
+      <!-- File Upload Section -->
+      <div class="mobile-file-upload">
+        <label class="file-upload-label">Portfolio/Highlights (Optional)</label>
+        <div class="file-upload-container">
+          <div class="file-drop-zone" id="mobile2d-file-drop">
+            <div class="drop-zone-content">
+              <span class="file-icon">📄</span>
+              <span class="file-text">Tap to upload PDF</span>
+              <span class="file-hint">Max 5MB</span>
+            </div>
+            <input type="file" 
+                   id="mobile2d-portfolio" 
+                   name="portfolio" 
+                   accept=".pdf,.PDF" 
+                   class="file-input-hidden">
+          </div>
+          
+          <div class="file-preview" id="mobile2d-file-preview" style="display: none;">
+            <span class="preview-icon">📄</span>
+            <div class="preview-info">
+              <span class="preview-name" id="mobile2d-file-name"></span>
+              <span class="preview-size" id="mobile2d-file-size"></span>
+            </div>
+            <button type="button" class="preview-remove" id="mobile2d-file-remove">✕</button>
+          </div>
+        </div>
+      </div>
+      
       <button type="submit" class="submit-button">Submit Application</button>
     </form>
   </div>
@@ -223,3 +251,7 @@
   <p>&copy; 2025 Keplaar Esports. All rights reserved.</p>
   <p>Made in Canada 🇨🇦</p>
 </footer>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config/supabase.js"></script>

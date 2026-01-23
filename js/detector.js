@@ -9,9 +9,9 @@ class DeviceDetector {
         this.config = {
             mobileWidth: 768,
             tabletWidth: 1024,
-            // Performance threshold for 3D mobile
-            mobile3DThreshold: 150, // Below this = 2D fallback
-            mobile3DRecommended: 200 // Above this = recommended for 3D
+            // Performance threshold for 3D mobile - LOWERED for medium-end phones
+            mobile3DThreshold: 80, // Below this = 2D fallback (was 150)
+            mobile3DRecommended: 120 // Above this = recommended for 3D (was 200)
         };
     }
 

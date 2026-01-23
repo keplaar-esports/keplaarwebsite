@@ -1,5 +1,5 @@
 <!-- ============================================ -->
-<!-- DESKTOP TEMPLATE - Clean & Modern Form -->
+<!-- DESKTOP TEMPLATE - Complete with Full Form -->
 <!-- ============================================ -->
 
 <!-- Intro UI Container -->
@@ -94,7 +94,9 @@
   </div>
 </div>
 
-<!-- Contact Form UI -->
+<!-- ============================================ -->
+<!-- NEW REDESIGNED CONTACT FORM - CLEAN & MODERN -->
+<!-- ============================================ -->
 <div id="contact-form-ui" class="blurred-ui" style="display: none;">
   <div class="ui-content form-container-new">
     <button class="close-button">&times;</button>
@@ -251,71 +253,44 @@
   </div>
 </div>
 
-<!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config/supabase.js"></script>
 
-<!-- Form Handlers Script -->
+
+<!-- INLINE SCRIPT - Form Handlers -->
 <script>
-console.log('🎯 Desktop template loaded');
+console.log('🎯 Desktop template loaded - setting up NEW form handlers...');
 
-// Wait for DOM and initialize
 setTimeout(() => {
-    console.log('⏱️ Starting form setup...');
+    console.log('🎯 Setting up form handlers...');
     
-    // ===== DROPDOWN HANDLER =====
+    // ==========================================
+    // NEW FORM: Custom Dropdown Handler
+    // ==========================================
     const setupDropdown = () => {
-        console.log('🔍 Looking for dropdown elements...');
-        
         const selectDisplay = document.getElementById('game-select-display');
         const selectDropdown = document.getElementById('game-select-dropdown');
         const hiddenSelect = document.getElementById('player-game');
         const placeholder = selectDisplay?.querySelector('.select-placeholder');
         
-        console.log('Dropdown elements:', {
-            display: selectDisplay ? 'FOUND' : 'NOT FOUND',
-            dropdown: selectDropdown ? 'FOUND' : 'NOT FOUND',
-            hidden: hiddenSelect ? 'FOUND' : 'NOT FOUND',
-            placeholder: placeholder ? 'FOUND' : 'NOT FOUND'
-        });
-        
         if (!selectDisplay || !selectDropdown) {
-            console.log('⚠️ Dropdown not ready, retrying in 300ms...');
-            setTimeout(setupDropdown, 300);
+            console.log('❌ Dropdown elements not found yet, retrying...');
+            setTimeout(setupDropdown, 500);
             return;
         }
         
-        console.log('✅ All dropdown elements found!');
-        console.log('Display element:', selectDisplay);
-        console.log('Dropdown element:', selectDropdown);
+        console.log('✅ Dropdown elements found, setting up handlers');
         
-        // Add pointer cursor to make it obvious it's clickable
-        selectDisplay.style.cursor = 'pointer';
-        
-        // Click to toggle - USE MOUSEDOWN for better reliability
-        selectDisplay.addEventListener('mousedown', (e) => {
+        // Toggle dropdown
+        selectDisplay.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('🖱️ DISPLAY CLICKED!');
-            
-            const isOpen = selectDisplay.classList.toggle('open');
-            selectDropdown.classList.toggle('open', isOpen);
-            console.log('📋 Dropdown is now:', isOpen ? 'OPEN' : 'CLOSED');
+            console.log('🖱️ Dropdown clicked!');
+            selectDisplay.classList.toggle('open');
+            selectDropdown.classList.toggle('open');
         });
         
-        // Also try regular click
-        selectDisplay.addEventListener('click', (e) => {
-            console.log('👆 Click event fired on display');
-        });
-        
-        // Select option
-        const options = document.querySelectorAll('.select-option');
-        console.log('📝 Found', options.length, 'options');
-        
-        options.forEach((option, index) => {
-            option.style.cursor = 'pointer';
-            
-            option.addEventListener('mousedown', (e) => {
+        // Option selection
+        document.querySelectorAll('.select-option').forEach(option => {
+            option.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 
@@ -323,34 +298,65 @@ setTimeout(() => {
                 const icon = option.dataset.icon;
                 const label = option.querySelector('.opt-label').textContent;
                 
-                console.log('✅ Option selected:', value);
+                console.log('✅ Selected:', value);
                 
+                // Update display
                 placeholder.innerHTML = `${icon} ${label}`;
                 placeholder.classList.add('selected');
+                
+                // Update hidden select
                 hiddenSelect.value = value;
                 
-                options.forEach(opt => opt.classList.remove('selected'));
+                // Visual feedback
+                document.querySelectorAll('.select-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
                 option.classList.add('selected');
                 
+                // Close dropdown
                 selectDisplay.classList.remove('open');
                 selectDropdown.classList.remove('open');
             });
         });
         
         // Close on outside click
-        document.addEventListener('mousedown', (e) => {
+        document.addEventListener('click', (e) => {
             if (!selectDisplay.contains(e.target) && !selectDropdown.contains(e.target)) {
                 selectDisplay.classList.remove('open');
                 selectDropdown.classList.remove('open');
             }
         });
-        
-        console.log('🎉 Dropdown setup complete!');
     };
     
     setupDropdown();
+                
+                // Update hidden select
+                hiddenSelect.value = value;
+                
+                // Visual feedback
+                document.querySelectorAll('.select-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                option.classList.add('selected');
+                
+                // Close dropdown
+                selectDisplay.classList.remove('open');
+                selectDropdown.classList.remove('open');
+            });
+        });
+        
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            if (!selectDisplay.contains(e.target) && !selectDropdown.contains(e.target)) {
+                selectDisplay.classList.remove('open');
+                selectDropdown.classList.remove('open');
+            }
+        });
+    }
     
-    // ===== FILE UPLOAD HANDLER =====
+    // ==========================================
+    // NEW FORM: File Upload Handler
+    // ==========================================
     const fileInput = document.getElementById('player-portfolio');
     const dropZone = document.getElementById('new-file-drop');
     const filePreview = document.getElementById('new-file-preview');
@@ -359,35 +365,39 @@ setTimeout(() => {
     const fileRemove = document.getElementById('new-file-remove');
     
     if (fileInput && dropZone) {
+        // Click to upload
         dropZone.addEventListener('click', () => fileInput.click());
         
+        // File selected
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file && file.type === 'application/pdf') {
-                fileName.textContent = file.name;
-                fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-                dropZone.style.display = 'none';
-                filePreview.style.display = 'flex';
+                displayFile(file);
             }
         });
         
+        // Drag and drop
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
             dropZone.classList.add('drag-active');
         });
         
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-active'));
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-active');
+        });
         
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropZone.classList.remove('drag-active');
+            
             const file = e.dataTransfer.files[0];
             if (file && file.type === 'application/pdf') {
                 fileInput.files = e.dataTransfer.files;
-                fileInput.dispatchEvent(new Event('change'));
+                displayFile(file);
             }
         });
         
+        // Remove file
         if (fileRemove) {
             fileRemove.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -396,9 +406,18 @@ setTimeout(() => {
                 filePreview.style.display = 'none';
             });
         }
+        
+        function displayFile(file) {
+            fileName.textContent = file.name;
+            fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            dropZone.style.display = 'none';
+            filePreview.style.display = 'flex';
+        }
     }
     
-    // ===== FORM SUBMISSION WITH SUPABASE =====
+    // ==========================================
+    // NEW FORM: Submission Handler
+    // ==========================================
     const form = document.getElementById('player-application-form');
     if (form) {
         form.addEventListener('submit', async (e) => {
@@ -407,133 +426,88 @@ setTimeout(() => {
             const submitBtn = form.querySelector('.new-submit-btn');
             const submitText = form.querySelector('.submit-text');
             const submitLoading = form.querySelector('.submit-loading');
-            const placeholder = document.querySelector('.select-placeholder');
             
+            // Show loading state
             submitText.style.display = 'none';
             submitLoading.style.display = 'flex';
             submitBtn.disabled = true;
             
-            try {
-                // Check if Supabase is ready
-                if (!window.supabaseClient) {
-                    throw new Error('Supabase not initialized. Please refresh the page.');
-                }
-                
-                // Get form data
-                const formData = new FormData(form);
-                const data = {
-                    name: formData.get('name'),
-                    email: formData.get('email'),
-                    phone: formData.get('phone'),
-                    game: formData.get('game'),
-                    rank: formData.get('rank'),
-                    game_id: formData.get('game_id')
-                };
-                
-                console.log('📝 Submitting application:', data);
-                
-                // Handle file upload if exists
-                let portfolioUrl = null;
-                let portfolioName = null;
-                let portfolioSize = null;
-                
-                if (fileInput && fileInput.files.length > 0) {
-                    const file = fileInput.files[0];
-                    console.log('📄 Uploading file:', file.name);
-                    
-                    // Upload to Supabase Storage
-                    const fileName = `${Date.now()}_${file.name}`;
-                    const { data: uploadData, error: uploadError } = await window.supabaseClient
-                        .storage
-                        .from('portfolios')
-                        .upload(fileName, file);
-                    
-                    if (uploadError) {
-                        console.error('❌ File upload error:', uploadError);
-                        throw new Error('Failed to upload file: ' + uploadError.message);
-                    }
-                    
-                    console.log('✅ File uploaded:', uploadData);
-                    
-                    // Get public URL
-                    const { data: urlData } = window.supabaseClient
-                        .storage
-                        .from('portfolios')
-                        .getPublicUrl(fileName);
-                    
-                    portfolioUrl = urlData.publicUrl;
-                    portfolioName = file.name;
-                    portfolioSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-                    
-                    console.log('🔗 File URL:', portfolioUrl);
-                }
-                
-                // Insert into database
-                const { data: dbData, error: dbError } = await window.supabaseClient
-                    .from('applications')
-                    .insert([{
-                        ...data,
-                        portfolio_url: portfolioUrl,
-                        portfolio_name: portfolioName,
-                        portfolio_size: portfolioSize
-                    }])
-                    .select();
-                
-                if (dbError) {
-                    console.error('❌ Database error:', dbError);
-                    throw new Error('Failed to submit application: ' + dbError.message);
-                }
-                
-                console.log('✅ Application saved:', dbData);
-                
-                // Success!
-                alert('✅ Application submitted successfully! We\'ll review it and get back to you soon.');
-                form.reset();
-                
-                // Reset file upload UI
-                if (filePreview) {
-                    filePreview.style.display = 'none';
-                    dropZone.style.display = 'flex';
-                }
-                if (placeholder) {
-                    placeholder.innerHTML = 'Select your primary game';
-                    placeholder.classList.remove('selected');
-                }
-                
-                document.getElementById('contact-form-ui').style.display = 'none';
-                
-            } catch (error) {
-                console.error('❌ Submission error:', error);
-                alert('❌ Failed to submit application: ' + error.message + '\n\nPlease try again or contact us directly.');
-            } finally {
-                submitText.style.display = 'inline';
-                submitLoading.style.display = 'none';
-                submitBtn.disabled = false;
+            // Simulate submission
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Success
+            alert('✅ Application submitted successfully!');
+            form.reset();
+            
+            // Reset UI
+            if (filePreview) {
+                filePreview.style.display = 'none';
+                dropZone.style.display = 'flex';
+            }
+            if (placeholder) {
+                placeholder.innerHTML = 'Select your primary game';
+                placeholder.classList.remove('selected');
+            }
+            
+            // Hide form
+            document.getElementById('contact-form-ui').style.display = 'none';
+            
+            // Reset button
+            submitText.style.display = 'inline';
+            submitLoading.style.display = 'none';
+            submitBtn.disabled = false;
+        });
+    }
+    
+    // ==========================================
+    // Close Button Handlers
+    // ==========================================
+    const formCloseBtn = document.querySelector('#contact-form-ui .close-button');
+    if (formCloseBtn) {
+        formCloseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (window.app?.uiManager) {
+                window.app.uiManager.hideAllUI();
             }
         });
     }
     
-    // ===== CLOSE BUTTONS =====
-    document.querySelector('#contact-form-ui .close-button')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        window.app?.uiManager?.hideAllUI();
-    });
-    
-    document.querySelector('#social-media-ui .close-button')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        window.app?.uiManager?.hideAllUI();
-    });
+    const socialCloseBtn = document.querySelector('#social-media-ui .close-button');
+    if (socialCloseBtn) {
+        socialCloseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (window.app?.uiManager) {
+                window.app.uiManager.hideAllUI();
+            }
+        });
+    }
     
     // Click outside to close
-    ['social-media-ui', 'contact-form-ui'].forEach(id => {
-        const element = document.getElementById(id);
-        element?.addEventListener('click', (e) => {
-            if (e.target === element) window.app?.uiManager?.hideAllUI();
-        });
-    });
+    const socialUI = document.getElementById('social-media-ui');
+    const formUI = document.getElementById('contact-form-ui');
     
-    console.log('✅ All handlers ready');
+    if (socialUI) {
+        socialUI.addEventListener('click', (e) => {
+            if (e.target === socialUI) {
+                if (window.app?.uiManager) {
+                    window.app.uiManager.hideAllUI();
+                }
+            }
+        });
+    }
+    
+    if (formUI) {
+        formUI.addEventListener('click', (e) => {
+            if (e.target === formUI) {
+                if (window.app?.uiManager) {
+                    window.app.uiManager.hideAllUI();
+                }
+            }
+        });
+    }
+    
+    console.log('✅ NEW form handlers ready');
 }, 500);
 </script>

@@ -54,10 +54,9 @@ console.log('📱 Mobile-3D main.js loaded');
         const scene = sceneManager.scene;
         
         console.log('✅ Scene created');
-        loadingManager.updateProgress(40, 'Scene ready');
         
         // ========== PHASE 3: LOAD ENVIRONMENT ==========
-        loadingManager.updateProgress(50, 'Loading environment...');
+        loadingManager.updateProgress(40, 'Loading environment...');
         
         await sceneManager.loadEnvironment(renderer);
         
@@ -65,7 +64,7 @@ console.log('📱 Mobile-3D main.js loaded');
         loadingManager.updateProgress(70, 'Environment ready');
         
         // ========== PHASE 4: INITIALIZE CONTROLLERS ==========
-        loadingManager.updateProgress(80, 'Initializing controllers...');
+        loadingManager.updateProgress(85, 'Initializing controllers...');
         
         // Create camera controller with proportional scroll
         const cameraController = new Mobile3DCameraController(renderer);
@@ -83,7 +82,9 @@ console.log('📱 Mobile-3D main.js loaded');
         console.log('✅ Controllers initialized');
         loadingManager.updateProgress(90, 'Controllers ready');
         
-        // ========== PHASE 5: SETUP GLOBAL APP ==========
+        // ========== PHASE 6: FINALIZE ==========
+        loadingManager.updateProgress(95, 'Finalizing...');
+        
         window.mobile3DApp = {
             renderer: renderer,
             scene: scene,
@@ -97,7 +98,7 @@ console.log('📱 Mobile-3D main.js loaded');
         
         console.log('✅ Global app object created');
         
-        // ========== PHASE 6: START ANIMATION LOOP ==========
+        // Start animation loop
         function animate() {
             requestAnimationFrame(animate);
             
@@ -111,8 +112,10 @@ console.log('📱 Mobile-3D main.js loaded');
         animate();
         console.log('✅ Animation loop started');
         
-        // ========== PHASE 7: FINALIZE ==========
-        loadingManager.updateProgress(100, 'Ready!');
+        // Complete loading ONCE
+        setTimeout(() => {
+            loadingManager.updateProgress(100, 'Ready!');
+        }, 300);
         
         // Wait a moment then show intro
         setTimeout(() => {
@@ -127,8 +130,33 @@ console.log('📱 Mobile-3D main.js loaded');
                 }, 600);
             }
             
-            // Show canvas more
-            renderer.domElement.style.opacity = '0.5';
+            // Intro appears solid, canvas hidden
+            renderer.domElement.style.opacity = '0';
+            renderer.domElement.style.transition = 'none';
+            
+            const introOverlay = document.querySelector('.mobile-intro-overlay');
+            if (introOverlay) {
+                // Start solid, matching loading screen
+                introOverlay.style.background = 'rgba(10, 10, 20, 0.95)';
+                introOverlay.style.transition = 'none';
+            }
+            
+            // After loading screen fully fades, start revealing environment (1.5s)
+            setTimeout(() => {
+                console.log('🎬 Revealing environment...');
+                
+                if (introOverlay) {
+                    // Fade to semi-transparent (1.5s)
+                    introOverlay.style.transition = 'background 1.5s ease';
+                    introOverlay.style.background = 'rgba(10, 10, 20, 0.7)';
+                }
+                
+                // Fade in canvas (1.5s)
+                renderer.domElement.style.transition = 'opacity 1.5s ease';
+                renderer.domElement.style.opacity = '0.5';
+                
+                console.log('✅ Environment reveal complete');
+            }, 800); // Start after loading screen is gone
             
             // Setup enter button
             setupEnterButton();
@@ -172,9 +200,11 @@ function setupEnterButton() {
     enterButton.addEventListener('click', async () => {
         console.log('🚪 Entering mobile-3D experience...');
         
-        // Disable button
+        // Disable button immediately
         enterButton.disabled = true;
+        enterButton.style.transition = 'opacity 0.3s ease';
         enterButton.style.opacity = '0.5';
+        enterButton.style.pointerEvents = 'none';
         
         // Get references
         const app = window.mobile3DApp;
@@ -183,22 +213,26 @@ function setupEnterButton() {
             return;
         }
         
-        // Fade out intro UI
-        introUI.style.transition = 'opacity 0.8s ease';
+        // Smooth fade out intro UI (longer duration)
+        introUI.style.transition = 'opacity 1.5s ease';
         introUI.style.opacity = '0';
         
-        // Make canvas fully visible
+        // Make canvas fully visible smoothly (longer duration)
+        app.renderer.domElement.style.transition = 'opacity 1.5s ease';
         app.renderer.domElement.style.opacity = '1';
         
-        // Wait for fade
-        await new Promise(resolve => setTimeout(resolve, 800));
+        // Wait for fade (give it time to complete)
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
         // Hide intro UI completely
         introUI.style.display = 'none';
+        introUI.classList.add('hidden');
         
-        // Show mobile header
+        // Show mobile header smoothly
         if (mobileHeader) {
             mobileHeader.style.display = 'block';
+            mobileHeader.style.opacity = '0';
+            mobileHeader.style.transition = 'opacity 0.5s ease';
             setTimeout(() => {
                 mobileHeader.style.opacity = '1';
             }, 50);
@@ -206,6 +240,10 @@ function setupEnterButton() {
         
         // Move camera from intro to first screen
         await app.cameraController.animateToPosition('screen1-left', 2);
+        
+        // Set scroll to match this position
+        const scrollPercent = app.cameraController.getScrollPercentForPosition('screen1-left');
+        app.scrollController.setScroll(scrollPercent, true); // true = immediate
         
         // Enable scrolling
         app.scrollController.enableScroll();

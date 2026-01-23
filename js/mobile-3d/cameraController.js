@@ -25,7 +25,7 @@ class Mobile3DCameraController {
             // Screen 1 - Events (3 sub-positions: left, center, right)
             'screen1-left': {
                 position: new THREE.Vector3(-2, 2.5, -1),
-                target: new THREE.Vector3(-3, 2.7, -7)
+                target: new THREE.Vector3(-2.5, 2.7, -7)
             },
             'screen1-center': {
                 position: new THREE.Vector3(0, 2.5, -1),
@@ -38,44 +38,44 @@ class Mobile3DCameraController {
             
             // Screen 2 - About Us (3 sub-positions)
             'screen2-left': {
-                position: new THREE.Vector3(0.5, 2.5, 1.7),
-                target: new THREE.Vector3(5, 3, 1.7)
+                position: new THREE.Vector3(2, 2.5, 0.5),
+                target: new THREE.Vector3(5, 2.5, 0)
             },
             'screen2-center': {
-                position: new THREE.Vector3(2, 2.5, 1.7),
-                target: new THREE.Vector3(8, 3, 1.7)
+                position: new THREE.Vector3(2, 2.5, 2),
+                target: new THREE.Vector3(5, 2.5, 2)
             },
             'screen2-right': {
-                position: new THREE.Vector3(3.5, 2.5, 1.7),
-                target: new THREE.Vector3(11, 3, 1.7)
+                position: new THREE.Vector3(2, 2.5, 2.2),
+                target: new THREE.Vector3(5, 2.5, 2.7)
             },
             
             // Screen 3 - Team (3 sub-positions)
             'screen3-left': {
-                position: new THREE.Vector3(-2, 2.5, 4.7),
-                target: new THREE.Vector3(-3, 2.5, 7)
+                position: new THREE.Vector3(2, 2.5, 4.7),
+                target: new THREE.Vector3(3, 2.5, 7)
             },
             'screen3-center': {
                 position: new THREE.Vector3(0, 2.5, 4.7),
                 target: new THREE.Vector3(0, 2.5, 7)
             },
             'screen3-right': {
-                position: new THREE.Vector3(2, 2.5, 4.7),
-                target: new THREE.Vector3(3, 2.5, 7)
+                position: new THREE.Vector3(-2, 2.5, 4.7),
+                target: new THREE.Vector3(-3, 2.5, 7)
             },
             
             // Screen 4 - Giveaways (3 sub-positions)
             'screen4-left': {
-                position: new THREE.Vector3(-3.5, 2.5, 1.7),
-                target: new THREE.Vector3(-11, 3, 1.7)
+                position: new THREE.Vector3(-2.5, 2.5, 1.7),
+                target: new THREE.Vector3(-8, 2.5, 2)
             },
             'screen4-center': {
-                position: new THREE.Vector3(-2, 2.5, 1.7),
-                target: new THREE.Vector3(-8, 3, 1.7)
+                position: new THREE.Vector3(-2.5, 2.5, 0),
+                target: new THREE.Vector3(-8, 2.5, 0)
             },
             'screen4-right': {
-                position: new THREE.Vector3(-0.5, 2.5, 1.7),
-                target: new THREE.Vector3(-5, 3, 1.7)
+                position: new THREE.Vector3(-2, 2.5, -1),
+                target: new THREE.Vector3(-8, 2.5, -1.3)
             },
             
             // Outro - Join Us

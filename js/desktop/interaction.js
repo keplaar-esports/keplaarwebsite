@@ -109,34 +109,19 @@ class InteractionManager {
     }
 
     setupTooltip() {
-        this.tooltip = document.createElement('div');
-        this.tooltip.style.cssText = `
-            position: fixed;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 14px;
-            pointer-events: none;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s;
-            max-width: 200px;
-            text-align: center;
-            font-family: Arial, sans-serif;
-        `;
-        document.body.appendChild(this.tooltip);
+        // Tooltip functionality replaced by PopupManager
+        // No longer creating the old tooltip element
+        console.log('💡 Using new PopupManager instead of tooltip');
     }
 
     showTooltip(text, x, y) {
-        this.tooltip.textContent = text;
-        this.tooltip.style.left = (x + 10) + 'px';
-        this.tooltip.style.top = (y - 10) + 'px';
-        this.tooltip.style.opacity = '1';
+        // Old tooltip method - no longer used
+        // Kept for backwards compatibility
     }
 
     hideTooltip() {
-        this.tooltip.style.opacity = '0';
+        // Old tooltip method - no longer used
+        // PopupManager handles hiding
     }
 
     setupInteractions() {
@@ -251,12 +236,24 @@ class InteractionManager {
             
             if (section) {
                 this.renderer.domElement.style.cursor = 'pointer';
-                this.showTooltip(section.hoverText, mouseX, mouseY);
+                
+                // Use new trigger enter/leave methods
+                if (window.popupManager) {
+                    window.popupManager.onTriggerEnter(section, mouseX, mouseY);
+                }
+                
                 this.highlightSection(object, section);
+                this.hoveredSection = section;
             } else {
                 this.renderer.domElement.style.cursor = 'default';
-                this.hideTooltip();
+                
+                // Notify that we left trigger area
+                if (window.popupManager) {
+                    window.popupManager.onTriggerLeave();
+                }
+                
                 this.removeHighlight();
+                this.hoveredSection = null;
             }
             
             if (this.hoveredObject !== object) {
@@ -271,7 +268,12 @@ class InteractionManager {
                 this.onHoverExit(this.hoveredObject);
                 this.hoveredObject = null;
             }
-            this.hideTooltip();
+            
+            // Notify that we left trigger area
+            if (window.popupManager) {
+                window.popupManager.onTriggerLeave();
+            }
+            
             this.removeHighlight();
             this.renderer.domElement.style.cursor = 'default';
         }
@@ -357,6 +359,30 @@ class InteractionManager {
     }
 
     handleSectionClick(section) {
+        // ✅ NEW: Check if we're at the correct camera position before handling click
+        const currentCameraPos = window.app?.cameraController?.getCurrentCameraPosition();
+        
+        // Define which sections belong to which camera positions
+        const sectionToCameraMap = {
+            'event1': 'screen1',
+            'event2': 'screen1',
+            'event3': 'screen1',
+            'ceo': 'screen3',
+            'cfo': 'screen3',
+            'cto': 'screen3',
+            'cpo': 'screen3',
+            'coo': 'screen3'
+        };
+        
+        const requiredPosition = sectionToCameraMap[section.name];
+        
+        // ✅ Only handle click if we're at the correct camera position
+        if (currentCameraPos !== requiredPosition) {
+            console.log(`🚫 Click blocked: ${section.name} requires ${requiredPosition}, but camera is at ${currentCameraPos}`);
+            return; // Don't handle click
+        }
+        
+        // Camera position is correct - proceed with click handling
         if (section.isEvent) {
             this.handleEventClick(section);
         }
@@ -435,9 +461,9 @@ class InteractionManager {
             return;
         }
         
-        // Only allow scroll navigation when not in intro
+        // ✅ NEW: Allow scroll navigation from ALL positions (including intro)
         const currentPos = window.app?.cameraController?.getCurrentCameraPosition();
-        if (currentPos && currentPos !== 'intro') {
+        if (currentPos) {
             event.preventDefault();
             
             const direction = event.deltaY > 0 ? 'next' : 'previous';
