@@ -271,8 +271,15 @@ function setupFileUpload() {
     const mobile2dFileRemove = document.getElementById('mobile2d-file-remove');
 
     if (mobile2dFileInput && mobile2dDropZone) {
-        // Click to upload
-        mobile2dDropZone.addEventListener('click', () => mobile2dFileInput.click());
+        // Mobile-friendly: Make input overlay the drop zone
+        mobile2dFileInput.style.position = 'absolute';
+        mobile2dFileInput.style.top = '0';
+        mobile2dFileInput.style.left = '0';
+        mobile2dFileInput.style.width = '100%';
+        mobile2dFileInput.style.height = '100%';
+        mobile2dFileInput.style.opacity = '0';
+        mobile2dFileInput.style.cursor = 'pointer';
+        mobile2dDropZone.style.position = 'relative';
         
         // Handle file selection
         mobile2dFileInput.addEventListener('change', (e) => {
@@ -287,7 +294,7 @@ function setupFileUpload() {
                 mobile2dFileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
                 mobile2dDropZone.style.display = 'none';
                 mobile2dFilePreview.style.display = 'flex';
-                console.log('✅ File uploaded:', file.name);
+                console.log('✅ [Mobile-2D] File uploaded:', file.name);
             } else {
                 alert('Please select a PDF file');
                 mobile2dFileInput.value = '';
@@ -301,11 +308,11 @@ function setupFileUpload() {
                 mobile2dFileInput.value = '';
                 mobile2dDropZone.style.display = 'flex';
                 mobile2dFilePreview.style.display = 'none';
-                console.log('❌ File removed');
+                console.log('❌ [Mobile-2D] File removed');
             });
         }
         
-        console.log('✅ File upload handler setup complete');
+        console.log('✅ [Mobile-2D] File upload handler setup complete');
     }
 }
 

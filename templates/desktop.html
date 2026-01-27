@@ -364,10 +364,18 @@ setTimeout(() => {
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file && file.type === 'application/pdf') {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB');
+                    fileInput.value = '';
+                    return;
+                }
                 fileName.textContent = file.name;
                 fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
                 dropZone.style.display = 'none';
                 filePreview.style.display = 'flex';
+            } else {
+                alert('Please select a PDF file');
+                fileInput.value = '';
             }
         });
         
@@ -398,120 +406,8 @@ setTimeout(() => {
         }
     }
     
-    // ===== FORM SUBMISSION WITH SUPABASE =====
-    const form = document.getElementById('player-application-form');
-    if (form) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const submitBtn = form.querySelector('.new-submit-btn');
-            const submitText = form.querySelector('.submit-text');
-            const submitLoading = form.querySelector('.submit-loading');
-            const placeholder = document.querySelector('.select-placeholder');
-            
-            submitText.style.display = 'none';
-            submitLoading.style.display = 'flex';
-            submitBtn.disabled = true;
-            
-            try {
-                // Check if Supabase is ready
-                if (!window.supabaseClient) {
-                    throw new Error('Supabase not initialized. Please refresh the page.');
-                }
-                
-                // Get form data
-                const formData = new FormData(form);
-                const data = {
-                    name: formData.get('name'),
-                    email: formData.get('email'),
-                    phone: formData.get('phone'),
-                    game: formData.get('game'),
-                    rank: formData.get('rank'),
-                    game_id: formData.get('game_id')
-                };
-                
-                console.log('📝 Submitting application:', data);
-                
-                // Handle file upload if exists
-                let portfolioUrl = null;
-                let portfolioName = null;
-                let portfolioSize = null;
-                
-                if (fileInput && fileInput.files.length > 0) {
-                    const file = fileInput.files[0];
-                    console.log('📄 Uploading file:', file.name);
-                    
-                    // Upload to Supabase Storage
-                    const fileName = `${Date.now()}_${file.name}`;
-                    const { data: uploadData, error: uploadError } = await window.supabaseClient
-                        .storage
-                        .from('portfolios')
-                        .upload(fileName, file);
-                    
-                    if (uploadError) {
-                        console.error('❌ File upload error:', uploadError);
-                        throw new Error('Failed to upload file: ' + uploadError.message);
-                    }
-                    
-                    console.log('✅ File uploaded:', uploadData);
-                    
-                    // Get public URL
-                    const { data: urlData } = window.supabaseClient
-                        .storage
-                        .from('portfolios')
-                        .getPublicUrl(fileName);
-                    
-                    portfolioUrl = urlData.publicUrl;
-                    portfolioName = file.name;
-                    portfolioSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-                    
-                    console.log('🔗 File URL:', portfolioUrl);
-                }
-                
-                // Insert into database
-                const { data: dbData, error: dbError } = await window.supabaseClient
-                    .from('applications')
-                    .insert([{
-                        ...data,
-                        portfolio_url: portfolioUrl,
-                        portfolio_name: portfolioName,
-                        portfolio_size: portfolioSize
-                    }])
-                    .select();
-                
-                if (dbError) {
-                    console.error('❌ Database error:', dbError);
-                    throw new Error('Failed to submit application: ' + dbError.message);
-                }
-                
-                console.log('✅ Application saved:', dbData);
-                
-                // Success!
-                alert('✅ Application submitted successfully! We\'ll review it and get back to you soon.');
-                form.reset();
-                
-                // Reset file upload UI
-                if (filePreview) {
-                    filePreview.style.display = 'none';
-                    dropZone.style.display = 'flex';
-                }
-                if (placeholder) {
-                    placeholder.innerHTML = 'Select your primary game';
-                    placeholder.classList.remove('selected');
-                }
-                
-                document.getElementById('contact-form-ui').style.display = 'none';
-                
-            } catch (error) {
-                console.error('❌ Submission error:', error);
-                alert('❌ Failed to submit application: ' + error.message + '\n\nPlease try again or contact us directly.');
-            } finally {
-                submitText.style.display = 'inline';
-                submitLoading.style.display = 'none';
-                submitBtn.disabled = false;
-            }
-        });
-    }
+    // NOTE: Form submission is handled by uiManager.js
+    // File upload UI is managed here, submission logic is in uiManager.js
     
     // ===== CLOSE BUTTONS =====
     document.querySelector('#contact-form-ui .close-button')?.addEventListener('click', (e) => {

@@ -432,26 +432,120 @@ class UIManager {
     }
 
     async handlePlayerApplication(e) {
+        e.preventDefault();
+        
         const form = e.target;
-        const submitButton = form.querySelector('.submit-button');
-        const submitText = submitButton.querySelector('.submit-text');
-        const submitLoading = submitButton.querySelector('.submit-loading');
+        const submitButton = form.querySelector('.new-submit-btn');
+        const submitText = submitButton?.querySelector('.submit-text');
+        const submitLoading = submitButton?.querySelector('.submit-loading');
+        
+        if (!submitButton || !submitText || !submitLoading) {
+            console.error('❌ Form elements not found');
+            return;
+        }
         
         submitText.style.display = 'none';
-        submitLoading.style.display = 'inline';
+        submitLoading.style.display = 'flex';
         submitButton.disabled = true;
         
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // Check if Supabase is ready
+            if (!window.supabaseClient) {
+                throw new Error('Database connection not ready. Please refresh the page.');
+            }
             
-            alert('🎉 Application Submitted Successfully!');
+            // Get form data
+            const formData = new FormData(form);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                game: formData.get('game'),
+                rank: formData.get('rank'),
+                game_id: formData.get('game_id')
+            };
             
+            console.log('📝 Submitting application:', data);
+            
+            // Handle file upload if exists
+            let portfolioUrl = null;
+            let portfolioName = null;
+            let portfolioSize = null;
+            
+            const fileInput = document.getElementById('player-portfolio');
+            if (fileInput && fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                console.log('📄 Uploading file:', file.name);
+                
+                // Upload to Supabase Storage
+                const fileName = `${Date.now()}_${file.name}`;
+                const { data: uploadData, error: uploadError } = await window.supabaseClient
+                    .storage
+                    .from('portfolios')
+                    .upload(fileName, file);
+                
+                if (uploadError) {
+                    console.error('❌ File upload error:', uploadError);
+                    throw new Error('Failed to upload file: ' + uploadError.message);
+                }
+                
+                console.log('✅ File uploaded:', uploadData);
+                
+                // Get public URL
+                const { data: urlData } = window.supabaseClient
+                    .storage
+                    .from('portfolios')
+                    .getPublicUrl(fileName);
+                
+                portfolioUrl = urlData.publicUrl;
+                portfolioName = file.name;
+                portfolioSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                
+                console.log('🔗 File URL:', portfolioUrl);
+            }
+            
+            // Insert into database
+            const { data: dbData, error: dbError } = await window.supabaseClient
+                .from('applications')
+                .insert([{
+                    ...data,
+                    portfolio_url: portfolioUrl,
+                    portfolio_name: portfolioName,
+                    portfolio_size: portfolioSize
+                }])
+                .select();
+            
+            if (dbError) {
+                console.error('❌ Database error:', dbError);
+                throw new Error('Failed to submit application: ' + dbError.message);
+            }
+            
+            console.log('✅ Application saved:', dbData);
+            
+            // Success!
+            alert('✅ Application submitted successfully! We\'ll review it and get back to you soon.');
+            
+            // Reset form and UI
             form.reset();
-            document.getElementById('file-info').style.display = 'none';
+            
+            const filePreview = document.getElementById('new-file-preview');
+            const dropZone = document.getElementById('new-file-drop');
+            if (filePreview && dropZone) {
+                filePreview.style.display = 'none';
+                dropZone.style.display = 'flex';
+            }
+            
+            const placeholder = form.querySelector('.select-placeholder');
+            if (placeholder) {
+                placeholder.innerHTML = 'Select your primary game';
+                placeholder.classList.remove('selected');
+            }
+            
             this.hideAllUI();
             
         } catch (error) {
-            alert(`❌ Error: ${error.message}`);
+            console.error('❌ Submission error:', error);
+            alert('❌ Failed to submit: ' + error.message + '\n\nPlease try again or contact us directly.');
         } finally {
             submitText.style.display = 'inline';
             submitLoading.style.display = 'none';

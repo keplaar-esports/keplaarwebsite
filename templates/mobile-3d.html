@@ -246,8 +246,15 @@ const mobile3dFileSize = document.getElementById('mobile3d-file-size');
 const mobile3dFileRemove = document.getElementById('mobile3d-file-remove');
 
 if (mobile3dFileInput && mobile3dDropZone) {
-  // Click to upload
-  mobile3dDropZone.addEventListener('click', () => mobile3dFileInput.click());
+  // Mobile-friendly: Make input overlay the drop zone
+  mobile3dFileInput.style.position = 'absolute';
+  mobile3dFileInput.style.top = '0';
+  mobile3dFileInput.style.left = '0';
+  mobile3dFileInput.style.width = '100%';
+  mobile3dFileInput.style.height = '100%';
+  mobile3dFileInput.style.opacity = '0';
+  mobile3dFileInput.style.cursor = 'pointer';
+  mobile3dDropZone.style.position = 'relative';
   
   // Handle file selection
   mobile3dFileInput.addEventListener('change', (e) => {
@@ -262,6 +269,7 @@ if (mobile3dFileInput && mobile3dDropZone) {
       mobile3dFileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
       mobile3dDropZone.style.display = 'none';
       mobile3dFilePreview.style.display = 'flex';
+      console.log('✅ [Mobile-3D] File selected:', file.name);
     } else {
       alert('Please select a PDF file');
       mobile3dFileInput.value = '';
@@ -275,8 +283,11 @@ if (mobile3dFileInput && mobile3dDropZone) {
       mobile3dFileInput.value = '';
       mobile3dDropZone.style.display = 'flex';
       mobile3dFilePreview.style.display = 'none';
+      console.log('❌ [Mobile-3D] File removed');
     });
   }
+  
+  console.log('✅ [Mobile-3D] File upload handler ready');
 }
 
 // ===== FORM SUBMISSION HANDLER FOR MOBILE-3D =====
