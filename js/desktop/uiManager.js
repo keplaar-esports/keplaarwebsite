@@ -449,9 +449,17 @@ class UIManager {
         submitButton.disabled = true;
         
         try {
-            // Check if Supabase is ready
+            // Check if Supabase SDK loaded
+            if (typeof window.supabase === 'undefined') {
+                throw new Error('Supabase SDK not loaded. Check internet connection and try refreshing the page.');
+            }
+            
+            // Check if Supabase client initialized
             if (!window.supabaseClient) {
-                throw new Error('Database connection not ready. Please refresh the page.');
+                if (window.supabaseLoadError) {
+                    throw new Error('Database connection failed: ' + window.supabaseLoadError);
+                }
+                throw new Error('Database not ready. Please wait a moment and try again, or refresh the page.');
             }
             
             // Get form data
