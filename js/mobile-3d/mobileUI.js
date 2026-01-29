@@ -291,7 +291,7 @@ class Mobile3DUI {
      */
     openFormModal() {
         this.formModal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+        // DON'T disable body overflow - let the modal handle its own scrolling
         
         if (this.menuOpen) {
             this.closeMenu();
@@ -307,7 +307,7 @@ class Mobile3DUI {
      */
     closeFormModal() {
         this.formModal.style.display = 'none';
-        document.body.style.overflow = 'auto';
+        // Body overflow was never disabled, so no need to reset it
         
         if (window.mobile3DApp?.scrollController) {
             window.mobile3DApp.scrollController.enableScroll();
