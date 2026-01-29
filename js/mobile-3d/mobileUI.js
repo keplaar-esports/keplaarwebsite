@@ -1,5 +1,5 @@
 // ============================================
-// MOBILE-3D UI - FIXED VERSION
+// MOBILE-3D UI - FIXED VERSION WITH SUPABASE
 // Proper outro modal handling with scroll re-enabling
 // ============================================
 
@@ -317,7 +317,7 @@ class Mobile3DUI {
     }
     
     /**
-     * Handle form submission
+     * Handle form submission - WITH SUPABASE
      */
     async handleFormSubmit(e) {
         e.preventDefault();
@@ -329,21 +329,97 @@ class Mobile3DUI {
         submitBtn.disabled = true;
         
         try {
+            // Check if Supabase is ready
+            if (!window.supabaseClient) {
+                throw new Error('Supabase not initialized. Please refresh the page.');
+            }
+            
+            // Get form data
             const formData = new FormData(this.form);
-            const data = Object.fromEntries(formData);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                game: formData.get('game'),
+                rank: formData.get('rank'),
+                game_id: formData.get('game_id')
+            };
             
-            console.log('📋 Form data:', data);
+            console.log('📝 [Mobile-3D via mobileUI] Submitting application:', data);
             
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // Handle file upload if exists
+            let portfolioUrl = null;
+            let portfolioName = null;
+            let portfolioSize = null;
             
+            const fileInput = document.getElementById('mobile3d-portfolio');
+            if (fileInput && fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                console.log('📄 [Mobile-3D] Uploading file:', file.name);
+                
+                // Upload to Supabase Storage
+                const fileName = `${Date.now()}_${file.name}`;
+                const { data: uploadData, error: uploadError } = await window.supabaseClient
+                    .storage
+                    .from('portfolios')
+                    .upload(fileName, file);
+                
+                if (uploadError) {
+                    console.error('❌ File upload error:', uploadError);
+                    throw new Error('Failed to upload file: ' + uploadError.message);
+                }
+                
+                console.log('✅ File uploaded:', uploadData);
+                
+                // Get public URL
+                const { data: urlData } = window.supabaseClient
+                    .storage
+                    .from('portfolios')
+                    .getPublicUrl(fileName);
+                
+                portfolioUrl = urlData.publicUrl;
+                portfolioName = file.name;
+                portfolioSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                
+                console.log('🔗 File URL:', portfolioUrl);
+            }
+            
+            // Insert into database
+            const { data: dbData, error: dbError } = await window.supabaseClient
+                .from('applications')
+                .insert([{
+                    ...data,
+                    portfolio_url: portfolioUrl,
+                    portfolio_name: portfolioName,
+                    portfolio_size: portfolioSize
+                }])
+                .select();
+            
+            if (dbError) {
+                console.error('❌ Database error:', dbError);
+                throw new Error('Failed to submit application: ' + dbError.message);
+            }
+            
+            console.log('✅ Application saved:', dbData);
+            
+            // Success!
             this.showToast('✅ Application submitted successfully!');
             
             this.form.reset();
+            
+            // Reset file upload UI
+            const filePreview = document.getElementById('mobile3d-file-preview');
+            const dropZone = document.getElementById('mobile3d-file-drop');
+            if (filePreview && dropZone) {
+                filePreview.style.display = 'none';
+                dropZone.style.display = 'flex';
+            }
+            
             this.closeFormModal();
             
         } catch (error) {
-            console.error('❌ Form submission error:', error);
-            this.showToast('❌ Failed to submit. Please try again.');
+            console.error('❌ [Mobile-3D] Submission error:', error);
+            this.showToast('❌ Failed to submit: ' + error.message);
         } finally {
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
