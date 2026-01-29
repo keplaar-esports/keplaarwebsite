@@ -118,11 +118,12 @@ class Mobile3DScrollController {
         if (!this.scrollEnabled) return;
         
         const target = e.target;
+        // Allow scrolling in modals and nav - DON'T prevent default on these
         if (target.closest('.hamburger') || 
             target.closest('.mobile-nav') || 
-            target.closest('.mobile-modal') ||
+            target.closest('.mobile-modal') ||  // Let modal handle its own scrolling
             target.closest('#mobile-header')) {
-            return;
+            return;  // Return but DON'T preventDefault - let native scroll work
         }
         
         e.preventDefault();
@@ -140,6 +141,13 @@ class Mobile3DScrollController {
      */
     onTouchMove(e) {
         if (!this.scrollEnabled) return;
+        
+        const target = e.target;
+        // Allow scrolling in modals - DON'T prevent default
+        if (target.closest('.mobile-modal') || 
+            target.closest('.mobile-nav')) {
+            return;  // Let modal/nav handle their own scrolling
+        }
         
         e.preventDefault();
         
@@ -165,6 +173,12 @@ class Mobile3DScrollController {
      */
     onTouchEnd(e) {
         if (!this.scrollEnabled) return;
+        
+        const target = e.target || e.changedTouches[0]?.target;
+        // Allow scrolling in modals
+        if (target && (target.closest('.mobile-modal') || target.closest('.mobile-nav'))) {
+            return;  // Let modal/nav handle their own scrolling
+        }
         
         if (Math.abs(this.scrollVelocity) > 0.5) {
             this.applyMomentum();
