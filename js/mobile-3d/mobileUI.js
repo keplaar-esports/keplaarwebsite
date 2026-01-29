@@ -317,7 +317,7 @@ class Mobile3DUI {
     }
     
     /**
-     * Handle form submission - WITH SUPABASE
+     * Handle form submission - WITH SUPABASE (SAME AS DESKTOP)
      */
     async handleFormSubmit(e) {
         e.preventDefault();
@@ -329,9 +329,17 @@ class Mobile3DUI {
         submitBtn.disabled = true;
         
         try {
-            // Check if Supabase is ready
+            // Check if Supabase SDK loaded (SAME AS DESKTOP)
+            if (typeof window.supabase === 'undefined') {
+                throw new Error('Supabase SDK not loaded. Check internet connection and try refreshing the page.');
+            }
+            
+            // Check if Supabase client initialized (SAME AS DESKTOP)
             if (!window.supabaseClient) {
-                throw new Error('Supabase not initialized. Please refresh the page.');
+                if (window.supabaseLoadError) {
+                    throw new Error('Database connection failed: ' + window.supabaseLoadError);
+                }
+                throw new Error('Database not ready. Please wait a moment and try again, or refresh the page.');
             }
             
             // Get form data
