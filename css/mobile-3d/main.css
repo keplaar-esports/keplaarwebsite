@@ -468,8 +468,17 @@ canvas {
   padding: 20px 20px 40px;
   padding-top: max(20px, env(safe-area-inset-top) + 10px);
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   animation: modalFadeIn 0.3s ease;
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.mobile-modal::-webkit-scrollbar {
+  display: none;
 }
 
 @keyframes modalFadeIn {
@@ -492,11 +501,13 @@ canvas {
   width: 100%;
   position: relative;
   overflow-x: hidden;
+  overflow-y: visible;
   margin-bottom: 20px;
   box-shadow: 
     0 30px 80px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  touch-action: pan-y;
 }
 
 @keyframes modalSlideUp {
@@ -592,6 +603,8 @@ canvas {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  touch-action: pan-y;
+  pointer-events: auto;
 }
 
 #mobile-application-form input,
