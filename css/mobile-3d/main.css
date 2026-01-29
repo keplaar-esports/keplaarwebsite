@@ -463,10 +463,12 @@ canvas {
   -webkit-backdrop-filter: blur(20px);
   z-index: 2000;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 20px;
+  padding: 20px 20px 40px;
+  padding-top: max(20px, env(safe-area-inset-top) + 10px);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   animation: modalFadeIn 0.3s ease;
 }
 
@@ -485,13 +487,12 @@ canvas {
     rgba(25, 25, 40, 0.95));
   border: 2px solid rgba(0, 170, 255, 0.4);
   border-radius: 25px;
-  padding: 40px 25px 30px;
+  padding: 50px 25px 30px;
   max-width: 500px;
   width: 100%;
   position: relative;
-  max-height: 90vh;
-  overflow-y: auto;
   overflow-x: hidden;
+  margin-bottom: 20px;
   box-shadow: 
     0 30px 80px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
