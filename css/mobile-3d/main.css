@@ -463,22 +463,12 @@ canvas {
   -webkit-backdrop-filter: blur(20px);
   z-index: 2000;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding: 20px 20px 40px;
-  padding-top: max(20px, env(safe-area-inset-top) + 10px);
+  padding: 20px;
   overflow-y: auto;
-  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   animation: modalFadeIn 0.3s ease;
-  /* Hide scrollbar but keep functionality */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-/* Hide scrollbar for Chrome, Safari and Opera */
-.mobile-modal::-webkit-scrollbar {
-  display: none;
 }
 
 @keyframes modalFadeIn {
@@ -496,18 +486,18 @@ canvas {
     rgba(25, 25, 40, 0.95));
   border: 2px solid rgba(0, 170, 255, 0.4);
   border-radius: 25px;
-  padding: 50px 25px 30px;
+  padding: 40px 25px 30px;
   max-width: 500px;
   width: 100%;
   position: relative;
+  max-height: 85vh;
+  overflow-y: auto;
   overflow-x: hidden;
-  overflow-y: visible;
-  margin-bottom: 20px;
+  -webkit-overflow-scrolling: touch;
   box-shadow: 
     0 30px 80px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  touch-action: pan-y;
 }
 
 @keyframes modalSlideUp {
@@ -603,8 +593,6 @@ canvas {
   display: flex;
   flex-direction: column;
   gap: 18px;
-  touch-action: pan-y;
-  pointer-events: auto;
 }
 
 #mobile-application-form input,
@@ -862,6 +850,11 @@ canvas {
 
 .modal-content::-webkit-scrollbar-thumb {
   background: transparent;
+}
+
+.modal-content {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
 /* ============================================ */
