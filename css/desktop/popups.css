@@ -457,6 +457,11 @@
 /* TEAM MEMBER POPUP - Specific styling */
 /* ============================================ */
 
+.popup-card-team {
+  max-width: 480px;
+  min-width: 380px;
+}
+
 .popup-card-team .popup-header {
   background: linear-gradient(135deg, 
     rgba(0, 170, 255, 0.08), 

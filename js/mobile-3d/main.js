@@ -17,17 +17,29 @@ console.log('📱 Mobile-3D main.js loaded');
         // Wait a moment for template to be in DOM
         await new Promise(resolve => setTimeout(resolve, 300));
         
+        // ========== PHASE 0: INITIALIZE OPTIMIZATION MANAGERS ==========
+        const qualityManager = new QualityManager();
+        const memoryManager = new MemoryManager();
+        
+        console.log(`🎮 Quality Tier: ${qualityManager.performanceTier}`);
+        console.log(`📊 Memory Budget: ${qualityManager.getMemoryBudget()}MB`);
+        
         // ========== PHASE 1: SETUP RENDERER ==========
         loadingManager.updateProgress(10, 'Setting up renderer...');
         
+        const settings = qualityManager.settings;
         const renderer = new THREE.WebGLRenderer({
-            antialias: true,
+            antialias: settings.antialias,
             alpha: true,
-            powerPreference: "high-performance"
+            powerPreference: "high-performance",
+            failIfMajorPerformanceCaveat: false // Don't fail on low-end devices
         });
         
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit for performance
+        
+        // Apply quality-specific renderer settings
+        qualityManager.configureRenderer(renderer);
+        
         renderer.outputEncoding = THREE.sRGBEncoding;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 2.0;
@@ -44,7 +56,24 @@ console.log('📱 Mobile-3D main.js loaded');
         renderer.domElement.style.opacity = '0.3';
         renderer.domElement.style.transition = 'opacity 1s ease';
         
-        console.log('✅ Renderer created');
+        // Setup WebGL context recovery
+        const contextManager = new WebGLContextManager(
+            renderer.domElement,
+            () => {
+                console.error('❌ Context lost - pausing app');
+                // Disable scroll and interactions
+                if (window.mobile3DApp?.scrollController) {
+                    window.mobile3DApp.scrollController.disableScroll();
+                }
+            },
+            () => {
+                console.log('✅ Context restored - reloading app');
+                // Reload page to reinitialize
+                window.location.reload();
+            }
+        );
+        
+        console.log('✅ Renderer created with context recovery');
         loadingManager.updateProgress(20, 'Renderer ready');
         
         // ========== PHASE 2: CREATE SCENE ==========
@@ -85,6 +114,14 @@ console.log('📱 Mobile-3D main.js loaded');
         // ========== PHASE 6: FINALIZE ==========
         loadingManager.updateProgress(95, 'Finalizing...');
         
+        // Create performance monitor
+        const performanceMonitor = new PerformanceMonitor(qualityManager, memoryManager);
+        
+        // Enable FPS counter if debug mode
+        if (window.location.search.includes('debug=true')) {
+            performanceMonitor.enableFPSCounter();
+        }
+        
         window.mobile3DApp = {
             renderer: renderer,
             scene: scene,
@@ -93,7 +130,12 @@ console.log('📱 Mobile-3D main.js loaded');
             cameraController: cameraController,
             scrollController: scrollController,
             mobileUI: mobileUI,
-            interactionManager: interactionManager
+            interactionManager: interactionManager,
+            // Optimization managers
+            qualityManager: qualityManager,
+            memoryManager: memoryManager,
+            contextManager: contextManager,
+            performanceMonitor: performanceMonitor
         };
         
         console.log('✅ Global app object created');
@@ -173,8 +215,21 @@ console.log('📱 Mobile-3D main.js loaded');
         
         // ========== CLEANUP ==========
         window.addEventListener('beforeunload', () => {
-            if (sceneManager.pmremGenerator) {
-                sceneManager.pmremGenerator.dispose();
+            console.log('🧹 Cleaning up before unload...');
+            
+            // Dispose scene manager
+            if (sceneManager) {
+                sceneManager.dispose();
+            }
+            
+            // Dispose renderer
+            if (renderer) {
+                renderer.dispose();
+            }
+            
+            // Reset memory manager
+            if (memoryManager) {
+                memoryManager.reset();
             }
         });
         
@@ -278,45 +333,13 @@ function showScrollHint() {
 if (window.location.search.includes('debug=true')) {
     console.log('🐛 Debug mode enabled');
     
-    // Add FPS counter
-    const fpsCounter = document.createElement('div');
-    fpsCounter.className = 'fps-counter show';
-    document.body.appendChild(fpsCounter);
-    
-    let lastTime = performance.now();
-    let frames = 0;
-    
-    function updateFPS() {
-        frames++;
-        const currentTime = performance.now();
-        
-        if (currentTime >= lastTime + 1000) {
-            const fps = Math.round((frames * 1000) / (currentTime - lastTime));
-            fpsCounter.textContent = `FPS: ${fps}`;
-            
-            // Warn if low FPS
-            if (fps < 30) {
-                fpsCounter.style.color = '#ff4444';
-            } else if (fps < 45) {
-                fpsCounter.style.color = '#ffaa00';
-            } else {
-                fpsCounter.style.color = '#00ff00';
-            }
-            
-            frames = 0;
-            lastTime = currentTime;
-        }
-        
-        requestAnimationFrame(updateFPS);
-    }
-    
-    updateFPS();
-    
     // Expose app globally for console debugging
     window.addEventListener('load', () => {
         console.log('🎮 Debug commands available:');
         console.log('  mobile3DApp - Access app object');
-        console.log('  mobile3DApp.cameraController.goToPosition("screen2-center")');
-        console.log('  mobile3DApp.scrollController.getScrollPercent()');
+        console.log('  mobile3DApp.performanceMonitor.getReport() - Performance stats');
+        console.log('  mobile3DApp.memoryManager.getMemoryReport() - Memory usage');
+        console.log('  mobile3DApp.contextManager.getStats() - WebGL context status');
+        console.log('  mobile3DApp.contextManager.forceContextLoss() - Test context loss');
     });
 }

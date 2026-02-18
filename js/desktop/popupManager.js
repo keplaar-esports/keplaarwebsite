@@ -33,7 +33,7 @@ class PopupManager {
             
             // TEAM MEMBERS (Screen 3)
             'ceo': {
-                left: window.innerWidth * 0.33,
+                left: window.innerWidth * 0.08,
                 top: window.innerHeight * 0.25,
                 connectorType: 'right-to-left'
             },
@@ -53,8 +53,8 @@ class PopupManager {
                 connectorType: 'left-to-right'
             },
             'coo': {
-                left: window.innerWidth * 0.43,
-                top: window.innerHeight * 0.25,
+                left: window.innerWidth * 0.70,
+                top: window.innerHeight * 0.15,
                 connectorType: 'left-to-right'
             }
         };
@@ -236,6 +236,20 @@ class PopupManager {
         };
 
         const roleIcon = roleIcons[section.role] || '👤';
+
+        const roleDesignations = {
+            'CEO': 'Founder',
+            'COO': 'Co-Founder'
+        };
+
+        const designation = roleDesignations[section.role] || 'Executive';
+
+        const roleDescriptions = {
+            'CEO': 'Amogh Ingale is a technology-focused entrepreneur with experience as a Data Analyst and as a Business Development Manager in the EdTech sector. Blending analytics, strategy, and a passion for gaming, he founded Keplaar eSports to build a structured and performance-driven ecosystem for aspiring eSports athletes.',
+            'COO': 'Squadron Leader Deepti Goswami is an Indian Air Force veteran with hands-on combat experience across multiple missions, bringing discipline, strategic thinking, and operational precision to every endeavor. With extensive expertise in simulation training and coaching, she has mentored individuals in high-performance environments. Driven by a passion for competitive gaming, she has transitioned her leadership and training acumen into the eSports ecosystem, focusing on shaping and mentoring the next generation of eSports athletes through structured, simulation-based development.'
+        };
+
+        const description = roleDescriptions[section.role] || 'Part of Keplaar Esports\' core leadership team, driving our vision and strategy in the competitive gaming landscape.';
         
         popup.innerHTML = `
             <div class="popup-header">
@@ -249,7 +263,7 @@ class PopupManager {
             
             <div class="popup-body">
                 <p class="popup-description">
-                    Part of Keplaar Esports' core leadership team, driving our vision and strategy in the competitive gaming landscape.
+                    ${description}
                 </p>
                 
                 <div class="popup-info-grid">
@@ -258,8 +272,8 @@ class PopupManager {
                         <span class="popup-info-value">${section.role}</span>
                     </div>
                     <div class="popup-info-item">
-                        <span class="popup-info-label">Department</span>
-                        <span class="popup-info-value">Executive</span>
+                        <span class="popup-info-label">Designation</span>
+                        <span class="popup-info-value">${designation}</span>
                     </div>
                 </div>
             </div>

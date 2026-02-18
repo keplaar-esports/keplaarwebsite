@@ -205,9 +205,20 @@ class ExperienceLoader {
                 'js/libs/GLTFLoader.js'
             ]);
 
-            // Step 5: Load mobile-3d modules (75%)
+            // Step 5: Load optimization modules FIRST (65%)
+            this.updateLoadingStatus('Loading optimizations...');
+            this.updateLoadingProgress(65);
+            await this.loadScripts([
+                'js/mobile-3d/optimizations/qualityManager.js',
+                'js/mobile-3d/optimizations/memoryManager.js',
+                'js/mobile-3d/optimizations/contextManager.js',
+                'js/mobile-3d/optimizations/performanceMonitor.js',
+                'js/mobile-3d/optimizations/testUtils.js'  // Testing utilities
+            ]);
+            
+            // Step 6: Load mobile-3d modules (80%)
             this.updateLoadingStatus('Loading mobile 3D modules...');
-            this.updateLoadingProgress(75);
+            this.updateLoadingProgress(80);
             await this.loadScripts([
                 'js/mobile-3d/sceneManager.js',
                 'js/mobile-3d/cameraController.js',

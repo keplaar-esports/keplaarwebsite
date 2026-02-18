@@ -9,6 +9,10 @@ class Mobile3DSceneManager {
         this.model = null;
         this.pmremGenerator = null;
         
+        // Initialize optimization managers
+        this.qualityManager = new QualityManager();
+        this.memoryManager = new MemoryManager();
+        
         this.setupLighting();
         this.setupSkybox();
     }
@@ -57,6 +61,9 @@ class Mobile3DSceneManager {
         const envRT = this.pmremGenerator.fromScene(this.sky).texture;
         this.scene.environment = envRT;
         
+        // Track environment texture
+        this.memoryManager.trackTexture(envRT, 'environment_map');
+        
         console.log('✅ Environment reflections setup');
     }
 
@@ -102,6 +109,8 @@ class Mobile3DSceneManager {
      * Enhance materials for mobile (optimized)
      */
     enhanceMaterialsForMobile(renderer) {
+        let materialCount = 0;
+        
         this.model.traverse(child => {
             if (child.isMesh && child.material) {
                 
@@ -113,15 +122,25 @@ class Mobile3DSceneManager {
                 const screenNames = ["Screen001", "Screen002", "Screen003", "Screen004"];
                 if (screenNames.includes(child.name)) return;
 
-                // Texture improvements (with mobile limits)
+                // Track geometry
+                if (child.geometry) {
+                    this.memoryManager.trackGeometry(child.geometry, child.name || `geometry_${materialCount}`);
+                }
+                
+                // Track and optimize material
+                this.memoryManager.trackMaterial(child.material, child.name || `material_${materialCount}`);
+                this.qualityManager.optimizeMaterial(child.material, renderer);
+                
+                materialCount++;
+
+                // Texture improvements (device-specific now)
                 if (child.material.map && renderer) {
-                    child.material.map.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
-                    child.material.map.minFilter = THREE.LinearMipmapLinearFilter;
-                    child.material.map.magFilter = THREE.LinearFilter;
+                    this.qualityManager.optimizeTexture(child.material.map, renderer);
                 }
 
-                // Reduce environment intensity slightly for performance
-                child.material.envMapIntensity = 2.0; // Reduced from 3.0
+                // Device-specific environment intensity
+                const settings = this.qualityManager.settings;
+                child.material.envMapIntensity = settings.envMapIntensity;
 
                 // Adjust roughness/metalness
                 if (child.material.roughness !== undefined)
@@ -178,7 +197,8 @@ class Mobile3DSceneManager {
             }
         });
         
-        console.log('✅ Materials optimized for mobile');
+        console.log(`✅ Materials optimized for mobile (${materialCount} materials)`);
+        console.log('📊 Memory usage:', this.memoryManager.getMemoryReport());
     }
 
     /**
@@ -251,8 +271,23 @@ class Mobile3DSceneManager {
      * Dispose resources
      */
     dispose() {
+        console.log('🧹 Disposing scene resources...');
+        
         if (this.pmremGenerator) {
             this.pmremGenerator.dispose();
         }
+        
+        if (this.model) {
+            this.memoryManager.disposeObject(this.model);
+        }
+        
+        if (this.sky) {
+            this.memoryManager.disposeObject(this.sky);
+        }
+        
+        // Force garbage collection hint
+        this.memoryManager.forceGC();
+        
+        console.log('✅ Scene disposed');
     }
 }

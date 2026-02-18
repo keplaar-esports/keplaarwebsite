@@ -13,70 +13,90 @@ class InteractionManager {
     
         this.screenSections = {
             "Screen004": [
-                { 
-                    name: "event1", 
-                    bounds: { x: 0.37, y: -0.72, width: 0.5, height: 1.2 },
-                    hoverText: "Event 1 - Coming Soon",
-                    isEvent: true
-                },
-                { 
-                    name: "event2", 
-                    bounds: { x: -0.3, y: -0.72, width: 0.5, height: 1.2 },
-                    hoverText: "Event 2 - Coming Soon", 
-                    isEvent: true
-                },
-                { 
-                    name: "event3", 
-                    bounds: { x: -0.93, y: -0.72, width: 0.5, height: 1.2 },
-                    hoverText: "Event 3 - Coming Soon",
-                    isEvent: true
-                }
+                // { 
+                //     name: "event1", 
+                //     bounds: { x: 0.37, y: -0.72, width: 0.5, height: 1.2 },
+                //     hoverText: "Event 1 - Coming Soon",
+                //     isEvent: true
+                // },
+                // { 
+                //     name: "event2", 
+                //     bounds: { x: -0.3, y: -0.72, width: 0.5, height: 1.2 },
+                //     hoverText: "Event 2 - Coming Soon", 
+                //     isEvent: true
+                // },
+                // { 
+                //     name: "event3", 
+                //     bounds: { x: -0.93, y: -0.72, width: 0.5, height: 1.2 },
+                //     hoverText: "Event 3 - Coming Soon",
+                //     isEvent: true
+                // }
             ],
 
             "Screen001": [],
 
-            "Screen002": [
+            "Screen002": 
+            [
                 { 
                     name: "ceo", 
-                    bounds: { x: 0.585, y: -0.8, width: 0.325, height: 1.12 },
+                    bounds: { x: 0.1, y: -0.68, width: 0.4, height: 1.4 },
                     hoverText: "CEO - Amogh Ingale",
-                    linkedinUrl: "https://linkedin.com/in/johnsmith", 
+                    linkedinUrl: "https://linkedin.com/in/amogh-ingale-a903b91aa/", 
                     role: "CEO",
                     personName: "Amogh Ingale"
                 },
                 { 
-                    name: "cfo", 
-                    bounds: { x: 0.2, y: -0.8, width: 0.325, height: 1.12 },
-                    hoverText: "CFO - Min Zhao",
-                    linkedinUrl: "https://linkedin.com/in/sarahjohnson",
-                    role: "CFO", 
-                    personName: "Min Zhao"
-                },
-                { 
-                    name: "cto", 
-                    bounds: { x: -0.19, y: -0.8, width: 0.325, height: 1.12 },
-                    hoverText: "CTO - Jason Lee",
-                    linkedinUrl: "https://linkedin.com/in/mikechen",
-                    role: "CTO",
-                    personName: "Jason Lee"
-                },
-                { 
-                    name: "cpo", 
-                    bounds:   { x: -0.585, y: -0.8, width: 0.325, height: 1.12 },
-                    hoverText: "CPO - Andy Chen",
-                    linkedinUrl: "https://linkedin.com/in/alexwilson",
-                    role: "CPO",
-                    personName: "Andy Chen"
-                },
-                { 
                     name: "coo", 
-                    bounds:  { x: -0.96, y: -0.8, width: 0.325, height: 1.12 },
-                    hoverText: "COO - Ahmed Abdi",
-                    linkedinUrl: "https://linkedin.com/in/emilybrown",
-                    role: "COO",
-                    personName: "Ahmed Abdi"
+                    bounds: { x: -0.6, y: -0.68, width: 0.4, height: 1.4 },
+                    hoverText: "COO - Deepti Goswami",
+                    linkedinUrl: "https://linkedin.com/in/amogh-ingale-a903b91aa/",
+                    role: "COO", 
+                    personName: "Deepti Goswami"
                 }
             ],
+            
+            // [
+            //     { 
+            //         name: "ceo", 
+            //         bounds: { x: 0.585, y: -0.8, width: 0.325, height: 1.12 },
+            //         hoverText: "CEO - Amogh Ingale",
+            //         linkedinUrl: "https://linkedin.com/in/johnsmith", 
+            //         role: "CEO",
+            //         personName: "Amogh Ingale"
+            //     },
+            //     { 
+            //         name: "cfo", 
+            //         bounds: { x: 0.2, y: -0.8, width: 0.325, height: 1.12 },
+            //         hoverText: "CFO - Min Zhao",
+            //         linkedinUrl: "https://linkedin.com/in/sarahjohnson",
+            //         role: "CFO", 
+            //         personName: "Min Zhao"
+            //     },
+            //     { 
+            //         name: "cto", 
+            //         bounds: { x: -0.19, y: -0.8, width: 0.325, height: 1.12 },
+            //         hoverText: "CTO - Jason Lee",
+            //         linkedinUrl: "https://linkedin.com/in/mikechen",
+            //         role: "CTO",
+            //         personName: "Jason Lee"
+            //     },
+            //     { 
+            //         name: "cpo", 
+            //         bounds:   { x: -0.585, y: -0.8, width: 0.325, height: 1.12 },
+            //         hoverText: "CPO - Andy Chen",
+            //         linkedinUrl: "https://linkedin.com/in/alexwilson",
+            //         role: "CPO",
+            //         personName: "Andy Chen"
+            //     },
+            //     { 
+            //         name: "coo", 
+            //         bounds:  { x: -0.96, y: -0.8, width: 0.325, height: 1.12 },
+            //         hoverText: "COO - Ahmed Abdi",
+            //         linkedinUrl: "https://linkedin.com/in/emilybrown",
+            //         role: "COO",
+            //         personName: "Ahmed Abdi"
+            //     }
+            // ],
 
             "Screen003": []
         };
