@@ -52,30 +52,30 @@ class Mobile3DCameraController {
             
             // Screen 3 - Team (3 sub-positions)
             'screen3-left': {
-                position: new THREE.Vector3(2, 2.5, 4.7),
-                target: new THREE.Vector3(3, 2.5, 7)
+                position: new THREE.Vector3(0.5, 2.5, 4.7),
+                target: new THREE.Vector3(1, 2.5, 7)
             },
             'screen3-center': {
                 position: new THREE.Vector3(0, 2.5, 4.7),
                 target: new THREE.Vector3(0, 2.5, 7)
             },
             'screen3-right': {
-                position: new THREE.Vector3(-2, 2.5, 4.7),
-                target: new THREE.Vector3(-3, 2.5, 7)
+                position: new THREE.Vector3(-0.5, 2.5, 4.7),
+                target: new THREE.Vector3(-1, 2.5, 7)
             },
             
             // Screen 4 - Giveaways (3 sub-positions)
             'screen4-left': {
-                position: new THREE.Vector3(-2.5, 2.5, 1.7),
-                target: new THREE.Vector3(-8, 2.5, 2)
+                position: new THREE.Vector3(-2, 2.5, 2.7),
+                target: new THREE.Vector3(-8, 2.5, 3.5)
             },
             'screen4-center': {
-                position: new THREE.Vector3(-2.5, 2.5, 0),
-                target: new THREE.Vector3(-8, 2.5, 0)
+                position: new THREE.Vector3(-2, 2.5, 1.8),
+                target: new THREE.Vector3(-8, 2.5, 1.8)
             },
             'screen4-right': {
-                position: new THREE.Vector3(-2, 2.5, -1),
-                target: new THREE.Vector3(-8, 2.5, -1.3)
+                position: new THREE.Vector3(-2, 2.5, 0.9),
+                target: new THREE.Vector3(-8, 2.5, -0.2)
             },
             
             // Outro - Join Us

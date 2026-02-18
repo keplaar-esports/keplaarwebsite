@@ -10,12 +10,12 @@ class Mobile3DInteraction {
         this.raycaster = new THREE.Raycaster();
         this.touchPosition = new THREE.Vector2();
         
-        // Touch state
+        // Touch/pointer state
         this.touchStartPos = new THREE.Vector2();
         this.touchStartTime = 0;
         this.isTap = false;
-        this.tapThreshold = 10; // pixels
-        this.tapTimeThreshold = 300; // ms
+        this.tapThreshold = 22;  // pixels — generous for finger taps
+        this.tapTimeThreshold = 600; // ms  — comfortable tap window
         
         // Setup interactions
         this.setupTouchListeners();
@@ -24,74 +24,42 @@ class Mobile3DInteraction {
     }
     
     /**
-     * Setup touch event listeners
+     * Setup pointer event listeners (immune to scroll controller's preventDefault)
+     * Using pointer events instead of touch events avoids conflicts with the
+     * scroll controller which calls preventDefault() on window touchstart.
      */
     setupTouchListeners() {
         const canvas = this.renderer.domElement;
-        
-        // Touch start
-        canvas.addEventListener('touchstart', (e) => {
-            this.onTouchStart(e);
-        }, { passive: true });
-        
-        // Touch move
-        canvas.addEventListener('touchmove', (e) => {
-            this.onTouchMove(e);
-        }, { passive: true });
-        
-        // Touch end (tap detection)
-        canvas.addEventListener('touchend', (e) => {
-            this.onTouchEnd(e);
-        }, { passive: true });
-        
-        console.log('✅ Touch listeners attached');
-    }
-    
-    /**
-     * Handle touch start
-     */
-    onTouchStart(e) {
-        if (e.touches.length !== 1) return; // Only handle single touch
-        
-        const touch = e.touches[0];
-        this.touchStartPos.set(touch.clientX, touch.clientY);
-        this.touchStartTime = performance.now();
-        this.isTap = true;
-    }
-    
-    /**
-     * Handle touch move - detect if it's a drag (not a tap)
-     */
-    onTouchMove(e) {
-        if (!this.isTap) return;
-        if (e.touches.length !== 1) return;
-        
-        const touch = e.touches[0];
-        const currentPos = new THREE.Vector2(touch.clientX, touch.clientY);
-        const distance = currentPos.distanceTo(this.touchStartPos);
-        
-        // If moved more than threshold, it's not a tap
-        if (distance > this.tapThreshold) {
+
+        canvas.addEventListener('pointerdown', (e) => {
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
+            this.touchStartPos.set(e.clientX, e.clientY);
+            this.touchStartTime = performance.now();
+            this.isTap = true;
+        });
+
+        canvas.addEventListener('pointermove', (e) => {
+            if (!this.isTap) return;
+            const currentPos = new THREE.Vector2(e.clientX, e.clientY);
+            if (currentPos.distanceTo(this.touchStartPos) > this.tapThreshold) {
+                this.isTap = false;
+            }
+        });
+
+        canvas.addEventListener('pointerup', (e) => {
+            if (!this.isTap) return;
+            const duration = performance.now() - this.touchStartTime;
+            if (duration < this.tapTimeThreshold) {
+                this.processTap(e.clientX, e.clientY);
+            }
             this.isTap = false;
-        }
-    }
-    
-    /**
-     * Handle touch end - process tap if valid
-     */
-    onTouchEnd(e) {
-        if (!this.isTap) return;
-        
-        const touchDuration = performance.now() - this.touchStartTime;
-        
-        // Check if it's a valid tap (quick and didn't move much)
-        if (touchDuration < this.tapTimeThreshold) {
-            // Get the touch position for raycasting
-            const touch = e.changedTouches[0];
-            this.processTap(touch.clientX, touch.clientY);
-        }
-        
-        this.isTap = false;
+        });
+
+        canvas.addEventListener('pointercancel', () => {
+            this.isTap = false;
+        });
+
+        console.log('✅ Pointer listeners attached (replaces touch listeners)');
     }
     
     /**
@@ -114,11 +82,11 @@ class Mobile3DInteraction {
         const intersects = this.raycaster.intersectObjects(screenMeshes);
         
         if (intersects.length > 0) {
-            const hitObject = intersects[0].object;
-            console.log(`👆 Tapped screen: ${hitObject.name}`);
-            
-            // Handle the tap
-            this.handleScreenTap(hitObject);
+            const hit = intersects[0];
+            console.log(`👆 Tapped screen: ${hit.object.name}`);
+
+            // Pass UV coordinates so we can detect left/right on the screen
+            this.handleScreenTap(hit.object, hit.uv);
         }
     }
     
@@ -144,40 +112,53 @@ class Mobile3DInteraction {
     /**
      * Handle screen tap
      */
-    handleScreenTap(screenMesh) {
+    handleScreenTap(screenMesh, uv) {
         // Visual feedback - pulse effect
         this.pulseScreen(screenMesh);
-        
-        // You can add more interactions here
-        // For example, showing details about the tapped screen
-        
-        // Get screen name
+
         const screenName = screenMesh.name;
-        
-        // Map screen names to actions
-        const screenActions = {
-            'Screen001': () => {
-                console.log('📱 Screen 1 tapped - About section');
-                // Could show a modal with more info
-            },
-            'Screen002': () => {
-                console.log('📱 Screen 2 tapped - Team section');
-                // Could show team details
-            },
-            'Screen003': () => {
-                console.log('📱 Screen 3 tapped - Events section');
-                // Could show event details
-            },
-            'Screen004': () => {
-                console.log('📱 Screen 4 tapped - Giveaways section');
-                // Could show giveaway info
+
+        // ── Screen 002 = Our Team (screen03.jpeg) ──────────────────────
+        if (screenName === 'Screen002') {
+            // Only show popup when the camera is on the team screen
+            const currentScreen = window.mobile3DApp?.cameraController?.getCurrentScreen();
+            if (currentScreen !== 'screen3') {
+                console.log('🚫 Team popup blocked – camera not at screen3');
+                return;
             }
-        };
-        
-        // Execute action if exists
-        if (screenActions[screenName]) {
-            screenActions[screenName]();
+
+            // Use UV.x to distinguish left (CEO) vs right (COO)
+            // UV.x < 0.5  → left half of screen → CEO
+            // UV.x >= 0.5 → right half of screen → COO
+            let role, personName, linkedinUrl;
+
+            const uvX = uv ? uv.x : 0.5; // fallback to centre if UV unavailable
+
+            if (uvX < 0.5) {
+                role        = 'CEO';
+                personName  = 'Amogh Ingale';
+                linkedinUrl = '#';
+            } else {
+                role        = 'COO';
+                personName  = 'Deepti Goswami';
+                linkedinUrl = '#';
+            }
+
+            console.log(`📱 Team screen tapped – UV.x=${uvX.toFixed(2)} → ${role}`);
+
+            if (window.mobileTeamPopup) {
+                window.mobileTeamPopup.show(role, personName, linkedinUrl);
+            }
+            return;
         }
+
+        // ── Other screens (no interaction yet) ────────────────────────
+        const screenLabels = {
+            'Screen001': 'Events',
+            'Screen003': 'Giveaways',
+            'Screen004': 'About Us'
+        };
+        console.log(`📱 ${screenLabels[screenName] || screenName} tapped`);
     }
     
     /**

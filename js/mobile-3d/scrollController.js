@@ -121,9 +121,10 @@ class Mobile3DScrollController {
         // Allow scrolling in modals and nav - DON'T prevent default on these
         if (target.closest('.hamburger') || 
             target.closest('.mobile-nav') || 
-            target.closest('.mobile-modal') ||  // Let modal handle its own scrolling
-            target.closest('#mobile-header')) {
-            return;  // Return but DON'T preventDefault - let native scroll work
+            target.closest('.mobile-modal') ||
+            target.closest('#mobile-header') ||
+            target.closest('#mobile-nav-arrows')) {
+            return;  // Return but DON'T preventDefault - let these elements handle their own events
         }
         
         e.preventDefault();
@@ -145,8 +146,9 @@ class Mobile3DScrollController {
         const target = e.target;
         // Allow scrolling in modals - DON'T prevent default
         if (target.closest('.mobile-modal') || 
-            target.closest('.mobile-nav')) {
-            return;  // Let modal/nav handle their own scrolling
+            target.closest('.mobile-nav') ||
+            target.closest('#mobile-nav-arrows')) {
+            return;  // Let these elements handle their own events
         }
         
         e.preventDefault();

@@ -208,9 +208,9 @@ class Mobile3DSceneManager {
         const textureLoader = new THREE.TextureLoader();
         const screenImages = [
             { screenName: "Screen001", imagePath: "assets/textures/newscreen2.png" },
-            { screenName: "Screen002", imagePath: "assets/textures/screen3.jpeg" },
+            { screenName: "Screen002", imagePath: "assets/textures/screen03.jpeg" },
             { screenName: "Screen003", imagePath: "assets/textures/screen4.jpeg" },
-            { screenName: "Screen004", imagePath: "assets/textures/screen1.jpeg" }
+            { screenName: "Screen004", imagePath: "assets/textures/screen01.jpeg" }
         ];
 
         let loadedCount = 0;

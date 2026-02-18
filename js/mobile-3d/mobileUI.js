@@ -39,6 +39,7 @@ class Mobile3DUI {
             this.setupNavigationLinks();
             this.setupSocialLinks();
             this.setupFormModal();
+            this.setupNavArrows();
             
             console.log('✅ Mobile-3D UI initialized');
         }, 500);
@@ -434,6 +435,148 @@ class Mobile3DUI {
         }
     }
     
+    /**
+     * Setup step navigation arrows (prev / next)
+     */
+    setupNavArrows() {
+        this.navArrowsContainer = document.getElementById('mobile-nav-arrows');
+        this.navPrevBtn = document.getElementById('mobile-nav-prev');
+        this.navNextBtn = document.getElementById('mobile-nav-next');
+
+        if (!this.navPrevBtn || !this.navNextBtn) {
+            console.warn('⚠️ Nav arrow buttons not found');
+            return;
+        }
+
+        // Use both touchend (mobile) and click (desktop/fallback)
+        const addNavListener = (btn, direction) => {
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault(); // prevent ghost click
+                e.stopPropagation();
+                this.navigateStep(direction);
+            }, { passive: false });
+            btn.addEventListener('click', () => this.navigateStep(direction));
+        };
+        addNavListener(this.navPrevBtn, 'prev');
+        addNavListener(this.navNextBtn, 'next');
+
+        console.log('✅ Nav arrows setup');
+    }
+
+    /**
+     * Show the nav arrows and start a continuous state-sync loop
+     * so the prev/next disabled state always reflects the current
+     * camera position regardless of how the user navigated there
+     * (scroll, hamburger menu, or nav buttons).
+     */
+    showNavArrows() {
+        if (!this.navArrowsContainer) return;
+        this.navArrowsContainer.style.display = 'flex';
+        this.updateNavArrowState();
+
+        // Poll every frame — lightweight index comparison only
+        let lastIndex = -1;
+        const syncLoop = () => {
+            const index = window.mobile3DApp?.cameraController?.getCurrentIndex() ?? -1;
+            if (index !== lastIndex) {
+                lastIndex = index;
+                this.updateNavArrowState();
+            }
+            requestAnimationFrame(syncLoop);
+        };
+        requestAnimationFrame(syncLoop);
+    }
+
+    /**
+     * Update disabled state of arrow buttons based on current path position.
+     * Prev is disabled at screen1-left (can't go to intro).
+     * Next is NEVER disabled — at outro it loops back to screen1-left.
+     */
+    updateNavArrowState() {
+        const app = window.mobile3DApp;
+        if (!app || !this.navPrevBtn || !this.navNextBtn) return;
+
+        const index    = app.cameraController.getCurrentIndex();
+        const minIndex = 1; // screen1-left
+
+        this.navPrevBtn.classList.toggle('disabled', index <= minIndex);
+        this.navNextBtn.classList.remove('disabled'); // always enabled — loops at outro
+    }
+
+    /**
+     * Navigate one step forward or backward through the camera path.
+     * At outro, pressing next wraps back to screen1-left.
+     */
+    navigateStep(direction) {
+        const app = window.mobile3DApp;
+        if (!app) return;
+
+        // Don't navigate while a popup or menu is open
+        if (window.mobileTeamPopup?.isActive) return;
+        if (this.menuOpen) return;
+
+        const path     = app.cameraController.path;
+        const minIndex = 1;                // screen1-left (never go back to intro)
+        const maxIndex = path.length - 1; // outro
+
+        let currentIndex = app.cameraController.getCurrentIndex();
+        currentIndex = Math.max(minIndex, Math.min(maxIndex, currentIndex));
+
+        let targetIndex;
+        let looping = false;
+
+        if (direction === 'next') {
+            if (currentIndex >= maxIndex) {
+                // At outro — loop back to screen1-left
+                targetIndex = minIndex;
+                looping     = true;
+            } else {
+                targetIndex = currentIndex + 1;
+            }
+        } else {
+            // prev — never goes below minIndex
+            targetIndex = Math.max(currentIndex - 1, minIndex);
+        }
+
+        if (targetIndex === currentIndex && !looping) return;
+
+        const targetKey   = path[targetIndex];
+        const targetScroll = app.cameraController.getScrollPercentForPosition(targetKey);
+
+        console.log(`🟳️ Nav ${direction}: path[${currentIndex}] → path[${targetIndex}] (${targetKey})${looping ? ' [LOOP]' : ''}`);
+
+        if (looping) {
+            // Teleport instantly — no animation through intermediate screens
+            app.scrollController.setScroll(targetScroll, true);
+            console.log(`✅ Looped to ${targetKey}`);
+            return;
+        }
+
+        // Normal step: smooth animated scroll
+        const startScroll = app.scrollController.getScrollPercent();
+        const startTime   = performance.now();
+        const duration    = 1100;
+
+        const animateStep = () => {
+            const elapsed  = performance.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            const eased = progress < 0.5
+                ? 4 * progress * progress * progress
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+            app.scrollController.setScroll(startScroll + (targetScroll - startScroll) * eased, true);
+
+            if (progress < 1) {
+                requestAnimationFrame(animateStep);
+            } else {
+                console.log(`✅ Arrived at ${targetKey}`);
+            }
+        };
+
+        requestAnimationFrame(animateStep);
+    }
+
     /**
      * Show toast notification
      */

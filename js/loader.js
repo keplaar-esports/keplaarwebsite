@@ -224,6 +224,7 @@ class ExperienceLoader {
                 'js/mobile-3d/cameraController.js',
                 'js/mobile-3d/scrollController.js',
                 'js/mobile-3d/mobileUI.js',
+                'js/mobile-3d/mobileTeamPopup.js',
                 'js/mobile-3d/interaction.js'
             ]);
 

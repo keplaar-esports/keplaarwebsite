@@ -302,7 +302,12 @@ function setupEnterButton() {
         
         // Enable scrolling
         app.scrollController.enableScroll();
-        
+
+        // Show navigation arrows
+        if (app.mobileUI) {
+            app.mobileUI.showNavArrows();
+        }
+
         // Show scroll hint
         showScrollHint();
         
