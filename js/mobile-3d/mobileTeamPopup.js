@@ -73,12 +73,12 @@ class MobileTeamPopup {
                 target.closest('#mobile-team-popup-container')
             )) return;
 
-            // Validate it was a real tap, not a scroll gesture
-            const dx       = touch.clientX - this._tapStartX;
-            const dy       = touch.clientY - this._tapStartY;
-            const dist     = Math.sqrt(dx * dx + dy * dy);
+            // Validate it was a real tap, not a horizontal swipe (scroll gesture)
+            // Since scrolling is now horizontal, reject if horizontal movement is large.
+            // Vertical movement is fine (that's just natural finger wobble on a tap).
+            const dx       = Math.abs(touch.clientX - this._tapStartX);
             const duration = performance.now() - this._tapStartTime;
-            if (dist > this._TAP_MOVE_LIMIT || duration > this._TAP_TIME_LIMIT) return;
+            if (dx > this._TAP_MOVE_LIMIT || duration > this._TAP_TIME_LIMIT) return;
 
             // ── Raycast + section check (identical to desktop logic) ──
             const section = this._getSectionAtTap(touch.clientX, touch.clientY);

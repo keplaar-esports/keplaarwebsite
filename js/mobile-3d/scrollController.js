@@ -15,9 +15,9 @@ class Mobile3DScrollController {
         this.lastScroll = 0; // Track previous scroll for direction
         
         // Touch tracking for momentum
-        this.touchStartY = 0;
+        this.touchStartX = 0;
         this.touchStartTime = 0;
-        this.lastTouchY = 0;
+        this.lastTouchX = 0;
         this.lastTouchTime = 0;
         
         // Scroll limits
@@ -107,7 +107,7 @@ class Mobile3DScrollController {
         
         e.preventDefault();
         
-        const delta = e.deltaY * this.scrollSensitivity;
+        const delta = e.deltaX * this.scrollSensitivity;
         this.updateScrollWithDelta(delta);
     }
     
@@ -129,8 +129,8 @@ class Mobile3DScrollController {
         
         e.preventDefault();
         
-        this.touchStartY = e.touches[0].clientY;
-        this.lastTouchY = this.touchStartY;
+        this.touchStartX = e.touches[0].clientX;
+        this.lastTouchX = this.touchStartX;
         this.touchStartTime = performance.now();
         this.lastTouchTime = this.touchStartTime;
         
@@ -153,20 +153,20 @@ class Mobile3DScrollController {
         
         e.preventDefault();
         
-        const currentY = e.touches[0].clientY;
+        const currentX = e.touches[0].clientX;
         const currentTime = performance.now();
         
-        const deltaY = this.lastTouchY - currentY;
+        const deltaX = this.lastTouchX - currentX;
         const deltaTime = currentTime - this.lastTouchTime;
         
-        const scrollDelta = deltaY * this.touchSensitivity;
+        const scrollDelta = deltaX * this.touchSensitivity;
         this.updateScrollWithDelta(scrollDelta);
         
         if (deltaTime > 0) {
             this.scrollVelocity = scrollDelta / deltaTime * 16;
         }
         
-        this.lastTouchY = currentY;
+        this.lastTouchX = currentX;
         this.lastTouchTime = currentTime;
     }
     
