@@ -74,7 +74,7 @@ class Mobile3DSceneManager {
         return new Promise((resolve, reject) => {
             const loader = new THREE.GLTFLoader();
             
-            loader.load('assets/models/environment3.glb', (gltf) => {
+            loader.load('assets/models/environment4.glb', (gltf) => {
                 this.model = gltf.scene;
                 this.scene.add(this.model);
                 
